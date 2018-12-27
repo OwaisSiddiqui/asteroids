@@ -66,50 +66,50 @@ public class Asteroid
 
         createAsteroidVectors();
         createAsteroidEdgeVectors();
-//        createAsteroidVectorEdgeNormals();
+        createAsteroidVectorEdgeNormals();
 //        projectVectorOntoNormal();
 
 //        MoveAsteroid();
 
-        line.setEndX(vectorAsteroids[0].Point1X);
-        line.setEndY(vectorAsteroids[0].Point1Y);
-        line.setStartX(vectorAsteroids[0].Point2X);
-        line.setStartY(vectorAsteroids[0].Point2Y);
+        line.setEndX(vectorAsteroidsVectorNormals[0].Point1X);
+        line.setEndY(vectorAsteroidsVectorNormals[0].Point1Y);
+        line.setStartX(vectorAsteroidsVectorNormals[0].Point2X);
+        line.setStartY(vectorAsteroidsVectorNormals[0].Point2Y);
 
         line.setStroke(Color.RED);
 
-        line1.setEndX(vectorAsteroids[1].Point1X);
-        line1.setEndY(vectorAsteroids[1].Point1Y);
-        line1.setStartX(vectorAsteroids[1].Point2X);
-        line1.setStartY(vectorAsteroids[1].Point2Y);
+        line1.setEndX(vectorAsteroidsVectorNormals[1].Point1X);
+        line1.setEndY(vectorAsteroidsVectorNormals[1].Point1Y);
+        line1.setStartX(vectorAsteroidsVectorNormals[1].Point2X);
+        line1.setStartY(vectorAsteroidsVectorNormals[1].Point2Y);
 
         line1.setStroke(Color.LIMEGREEN);
 
-        line2.setEndX(vectorAsteroids[2].Point1X);
-        line2.setEndY(vectorAsteroids[2].Point1Y);
-        line2.setStartX(vectorAsteroids[2].Point2X);
-        line2.setStartY(vectorAsteroids[2].Point2Y);
+        line2.setEndX(vectorAsteroidsVectorNormals[2].Point1X);
+        line2.setEndY(vectorAsteroidsVectorNormals[2].Point1Y);
+        line2.setStartX(vectorAsteroidsVectorNormals[2].Point2X);
+        line2.setStartY(vectorAsteroidsVectorNormals[2].Point2Y);
 
         line2.setStroke(Color.BLUE);
 
-        line3.setEndX(vectorAsteroids[3].Point1X);
-        line3.setEndY(vectorAsteroids[3].Point1Y);
-        line3.setStartX(vectorAsteroids[3].Point2X);
-        line3.setStartY(vectorAsteroids[3].Point2Y);
+        line3.setEndX(vectorAsteroidsVectorNormals[3].Point1X);
+        line3.setEndY(vectorAsteroidsVectorNormals[3].Point1Y);
+        line3.setStartX(vectorAsteroidsVectorNormals[3].Point2X);
+        line3.setStartY(vectorAsteroidsVectorNormals[3].Point2Y);
 
         line3.setStroke(Color.GREEN);
 
-        line4.setEndX(vectorAsteroids[4].Point1X);
-        line4.setEndY(vectorAsteroids[4].Point1Y);
-        line4.setStartX(vectorAsteroids[4].Point2X);
-        line4.setStartY(vectorAsteroids[4].Point2Y);
+        line4.setEndX(vectorAsteroidsVectorNormals[4].Point1X);
+        line4.setEndY(vectorAsteroidsVectorNormals[4].Point1Y);
+        line4.setStartX(vectorAsteroidsVectorNormals[4].Point2X);
+        line4.setStartY(vectorAsteroidsVectorNormals[4].Point2Y);
 
         line4.setStroke(Color.ORANGE);
 
-        line5.setEndX(vectorAsteroids[5].Point1X);
-        line5.setEndY(vectorAsteroids[5].Point1Y);
-        line5.setStartX(vectorAsteroids[5].Point2X);
-        line5.setStartY(vectorAsteroids[5].Point2Y);
+        line5.setEndX(vectorAsteroidsVectorNormals[5].Point1X);
+        line5.setEndY(vectorAsteroidsVectorNormals[5].Point1Y);
+        line5.setStartX(vectorAsteroidsVectorNormals[5].Point2X);
+        line5.setStartY(vectorAsteroidsVectorNormals[5].Point2Y);
 
         line5.setStroke(Color.CYAN);
 
@@ -216,40 +216,60 @@ public class Asteroid
 
     public void createAsteroidVectors()
     {
-        for (int i = 0, idx = 0; i < 11 && idx <= 6; i+=2, idx++)
+        for (int i = 0, idx = 0; i <= 10 && idx <= 6; i+=2, idx++)
         {
             vectorAsteroids[idx] = new VectorAsteroids(
                     asteroidImage.getLayoutX(),
                     asteroidImage.getLayoutY(),
                     asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
                     asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY());
-            System.out.print(vectorAsteroids[idx].Point2X-asteroidImage.getLayoutX()+" ");
-            System.out.println(vectorAsteroids[idx].Point2Y-asteroidImage.getLayoutY());
         }
     }
 
     public void createAsteroidEdgeVectors()
     {
-        for (int i = 0, idx = 0; i < 9 && idx < 6; i+=4, idx++)
+        for (int i = 0, idx = 0; i <= 10 && idx <= 6; i+=2, idx++)
         {
-            vectorEdgesAsteroids[i] = new VectorAsteroids(asteroidImage.getPoints().get(i), asteroidImage.getPoints().get(i+1),
-                    asteroidImage.getPoints().get(i+2), asteroidImage.getPoints().get(i+3));
+            System.out.println(idx);
+           if (i <= 8)
+           {
+               vectorEdgesAsteroids[idx] = new VectorAsteroids(
+                       asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
+                       asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY(),
+                       asteroidImage.getPoints().get(i+2)+asteroidImage.getLayoutX(),
+                       asteroidImage.getPoints().get(i+3)+asteroidImage.getLayoutY());
+           }
+           // need an else statement because for the last one the last point needs to go the the very beginning
+           // and also loop will go over 10
+           else if (i == 10)
+           {
+               vectorEdgesAsteroids[idx] = new VectorAsteroids(
+                       asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
+                       asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY(),
+                       asteroidImage.getPoints().get(0)+asteroidImage.getLayoutX(),
+                       asteroidImage.getPoints().get(1)+asteroidImage.getLayoutY());
+           }
+        }
+    }
+
+    public void createAsteroidVectorEdgeNormals()
+    {
+        double vectorChangeInX = 0;
+        double vectorChangeInY = 0;
+        int i = 0;
+        while (i <= 5)
+        {
+            vectorChangeInX = vectorEdgesAsteroids[i].Point2X - vectorEdgesAsteroids[i].Point1X;
+            vectorChangeInY = vectorEdgesAsteroids[i].Point2Y - vectorEdgesAsteroids[i].Point1Y;
+            // Formula to get normal vector for cartesian coordinates fount on StackOverflow
+            vectorAsteroidsVectorNormals[i] = new VectorAsteroids(
+                    -vectorChangeInY+asteroidImage.getLayoutX(),
+                    vectorChangeInX+asteroidImage.getLayoutY(),
+                    vectorChangeInY+asteroidImage.getLayoutX(),
+                    -vectorChangeInX+asteroidImage.getLayoutY());
             i++;
         }
     }
-//
-//    public void createAsteroidVectorEdgeNormals()
-//    {
-//        double vectorChangeInX = 0;
-//        double vectorChangeInY = 0;
-//        int i = 0;
-//        while (i < vectorAsteroidsVectorNormals.length)
-//        {
-//            vectorChangeInX = vectorEdgesAsteroids[i].Point2X - vectorEdgesAsteroids[i].Point1X;
-//            vectorChangeInY = vectorEdgesAsteroids[i].Point2Y - vectorEdgesAsteroids[i].Point1Y;
-//            vectorAsteroidsVectorNormals[i] = new VectorAsteroids(-vectorChangeInX, vectorChangeInX, vectorChangeInY, -vectorChangeInY);
-//        }
-//    }
 //
 //    public void projectVectorOntoNormal()
 //    {
