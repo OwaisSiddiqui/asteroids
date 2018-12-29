@@ -116,22 +116,23 @@ public class Asteroid
 //
 //        VectorAsteroids vector1 = new VectorAsteroids(-5, 10, -5, 1);
 //        VectorAsteroids vector2 = new VectorAsteroids(4, 3, 10,3);
-        System.out.println(Arrays.toString(projectionVectors));
+//        System.out.println(Arrays.toString(projectionVectors));
 
-        System.out.println();
-        System.out.println("EXACT: ");
-        getDotProduct(vectorAsteroidsVectorEdgeNormals[0], vectorAsteroidsVectorEdgeNormals[0], 2);
-        System.out.println("EXACT SAME?: "+Math.pow(vectorAsteroidsVectorEdgeNormals[0].magnitude, 2));
-//        System.out.println("This dot product should be: "+getDotProduct(vector1, vector2));
+//        System.out.println();
+//        System.out.println("EXACT: ");
+//        getDotProduct(vectorAsteroidsVectorEdgeNormals[0], vectorAsteroidsVectorEdgeNormals[0], 2);
+//        System.out.println("EXACT SAME?: "+Math.pow(vectorAsteroidsVectorEdgeNormals[0].magnitude, 2));
+////        System.out.println("This dot product should be: "+getDotProduct(vector1, vector2));
 
 
-//        for (int i = 0; i <= 5; i++)
-//        {
-//            System.out.println("Vector "+i+" "+vectorAsteroidsVectorEdgeNormals[i].Point1X);
-//            System.out.println("Vector "+i+" "+vectorAsteroidsVectorEdgeNormals[i].Point1Y);
-//            System.out.println("Vector "+i+" "+vectorAsteroidsVectorEdgeNormals[i].Point2X);
-//            System.out.println("Vector "+i+" "+vectorAsteroidsVectorEdgeNormals[i].Point2Y);
-//        }
+        for (int i = 0; i <= 5; i++)
+        {
+            projectionVectors[i].printVectorAsteroids();
+        }
+
+        System.out.println("ORIGINAL: ");
+        vectorAsteroidsVectorEdgeNormals[0].printVectorAsteroids();
+
     }
 
     public void MoveAsteroid()
@@ -288,8 +289,8 @@ public class Asteroid
                     -vectorChangeInX+asteroidImage.getLayoutY());
             if (i == 0)
             {
-                System.out.println("VERY ORIGINAL VECTOR: ");
-                vectorAsteroidsVectorEdgeNormals[i].printVectorAsteroids();
+//                System.out.println("VERY ORIGINAL VECTOR: ");
+//                vectorAsteroidsVectorEdgeNormals[i].printVectorAsteroids();
             }
             i++;
         }
@@ -300,33 +301,35 @@ public class Asteroid
         int i = 0;
         while (i <= 5)
         {
-            System.out.println();
-            System.out.print("ORIGINAL (PROJECTION): ");
-            vectorAsteroidsVectorEdgeNormals[0].printVectorAsteroids();
+//            System.out.println();
+//            System.out.print("ORIGINAL (PROJECTION): ");
+//            vectorAsteroidsVectorEdgeNormals[0].printVectorAsteroids();
 //             The projection is a scalar, although can be a vector, but is not needed as that just tells the direction
 //             but the magnitude it only needed (more on Paint)
             projectionVectors[i] = multiplyVector(vectorAsteroidsVectorEdgeNormals[0], (getDotProduct(vectorAsteroids[i],
                     vectorAsteroidsVectorEdgeNormals[0], 1)/
                     getDotProduct(vectorAsteroidsVectorEdgeNormals[0], vectorAsteroidsVectorEdgeNormals[0], 2)), i);
-//            System.out.println("Magnitude squared: "+Math.pow(vectorAsteroidsVectorEdgeNormals[i].magnitude, 2));
+            System.out.println("Magnitude squared: "+getDotProduct(vectorAsteroids[i],
+                    vectorAsteroidsVectorEdgeNormals[0], 1)/
+                    getDotProduct(vectorAsteroidsVectorEdgeNormals[0], vectorAsteroidsVectorEdgeNormals[0], 2));
             i++;
         }
     }
 
     public double getDotProduct(VectorAsteroids vector1, VectorAsteroids vector2, int i)
     {
-        System.out.println();
-        System.out.println("*** DOT PRODUCT ***");
-        vector1.printVectorAsteroids();
-        vector2.printVectorAsteroids();
-        if (i == 1)
-        {
-            System.out.println("With new vector: ");
-        }
-        else
-        {
-            System.out.println("All same: ");
-        }
+//        System.out.println();
+//        System.out.println("*** DOT PRODUCT ***");
+//        vector1.printVectorAsteroids();
+//        vector2.printVectorAsteroids();
+//        if (i == 1)
+//        {
+//            System.out.println("With new vector: ");
+//        }
+//        else
+//        {
+//            System.out.println("All same: ");
+//        }
         double ax = vector1.Point2X-vector1.Point1X;
         double ay = vector1.Point2Y-vector1.Point1Y;
 
@@ -335,10 +338,10 @@ public class Asteroid
 
 //        System.out.println(vector1.Point2X-vector1.Point1X);
 
-        System.out.println("Ax: "+ax+" Ay: "+ay+" Bx: "+bx+" By: "+by);
+//        System.out.println("Ax: "+ax+" Ay: "+ay+" Bx: "+bx+" By: "+by);
 
         double dotProduct = (ax*bx) + (ay*by);
-            System.out.println("THE DOT PRODUCT: "+dotProduct);
+//            System.out.println("THE DOT PRODUCT: "+dotProduct);
         return dotProduct;
     }
 
