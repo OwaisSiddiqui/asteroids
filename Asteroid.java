@@ -118,6 +118,7 @@ public class Asteroid
 //        VectorAsteroids vector2 = new VectorAsteroids(4, 3, 10,3);
         System.out.println(Arrays.toString(projectionVectors));
 
+        System.out.println();
         System.out.println("EXACT: ");
         getDotProduct(vectorAsteroidsVectorEdgeNormals[0], vectorAsteroidsVectorEdgeNormals[0], 2);
         System.out.println("EXACT SAME?: "+Math.pow(vectorAsteroidsVectorEdgeNormals[0].magnitude, 2));
@@ -272,8 +273,8 @@ public class Asteroid
 
     public void createAsteroidVectorEdgeNormals()
     {
-        double vectorChangeInX = 0;
-        double vectorChangeInY = 0;
+        double vectorChangeInX;
+        double vectorChangeInY;
         int i = 0;
         while (i <= 5)
         {
@@ -285,6 +286,11 @@ public class Asteroid
                     vectorChangeInX+asteroidImage.getLayoutY(),
                     vectorChangeInY+asteroidImage.getLayoutX(),
                     -vectorChangeInX+asteroidImage.getLayoutY());
+            if (i == 0)
+            {
+                System.out.println("VERY ORIGINAL VECTOR: ");
+                vectorAsteroidsVectorEdgeNormals[i].printVectorAsteroids();
+            }
             i++;
         }
     }
@@ -292,13 +298,15 @@ public class Asteroid
     public void projectVectorOntoNormal()
     {
         int i = 0;
-        System.out.print("Original: ");
-        vectorAsteroidsVectorEdgeNormals[0].printVectorAsteroids();
         while (i <= 5)
         {
+            System.out.println();
+            System.out.print("ORIGINAL (PROJECTION): ");
+            vectorAsteroidsVectorEdgeNormals[0].printVectorAsteroids();
 //             The projection is a scalar, although can be a vector, but is not needed as that just tells the direction
 //             but the magnitude it only needed (more on Paint)
-            projectionVectors[i] = multiplyVector(vectorAsteroidsVectorEdgeNormals[0], (getDotProduct(vectorAsteroids[i], vectorAsteroidsVectorEdgeNormals[0], 1)/
+            projectionVectors[i] = multiplyVector(vectorAsteroidsVectorEdgeNormals[0], (getDotProduct(vectorAsteroids[i],
+                    vectorAsteroidsVectorEdgeNormals[0], 1)/
                     getDotProduct(vectorAsteroidsVectorEdgeNormals[0], vectorAsteroidsVectorEdgeNormals[0], 2)), i);
 //            System.out.println("Magnitude squared: "+Math.pow(vectorAsteroidsVectorEdgeNormals[i].magnitude, 2));
             i++;
@@ -307,6 +315,8 @@ public class Asteroid
 
     public double getDotProduct(VectorAsteroids vector1, VectorAsteroids vector2, int i)
     {
+        System.out.println();
+        System.out.println("*** DOT PRODUCT ***");
         vector1.printVectorAsteroids();
         vector2.printVectorAsteroids();
         if (i == 1)
@@ -328,25 +338,28 @@ public class Asteroid
         System.out.println("Ax: "+ax+" Ay: "+ay+" Bx: "+bx+" By: "+by);
 
         double dotProduct = (ax*bx) + (ay*by);
-//        System.out.println("Dot product: "+dotProduct);
+            System.out.println("THE DOT PRODUCT: "+dotProduct);
         return dotProduct;
     }
 
     public VectorAsteroids multiplyVector(VectorAsteroids vector, double magnitude, int i)
     {
-        System.out.println("Magnitude: "+magnitude);
-        System.out.println("Before: ("+vectorAsteroids[i].Point1X+", "+
-                vectorAsteroids[i].Point1Y+") | ("+vectorAsteroids[i].Point2X+", "+
-                vectorAsteroids[i].Point2Y+")");
-        vector.Point1X = vector.Point1X*magnitude;
-        System.out.print("New: ("+vector.Point1X+", ");
-        vector.Point1Y = vector.Point1Y*magnitude;
-        System.out.print(vector.Point1Y+") ");
-        vector.Point2X = vector.Point2X*magnitude;
-        System.out.print("| ("+vector.Point2X+",  ");
-        vector.Point2Y = vector.Point2Y*magnitude;
-        System.out.println(vector.Point2Y+")");
-        return vector;
+//        System.out.println();
+//        System.out.println("MULTIPLY VECTOR: ");
+//        System.out.println("MAGNITUDE: "+magnitude);
+//        System.out.println("BEFORE: ("+vectorAsteroids[i].Point1X+", "+
+//                vectorAsteroids[i].Point1Y+") | ("+vectorAsteroids[i].Point2X+", "+
+//                vectorAsteroids[i].Point2Y+")");
+//        vector.Point1X = vector.Point1X*magnitude;
+//        System.out.print("NEW: ("+vector.Point1X+", ");
+//        vector.Point1Y = vector.Point1Y*magnitude;
+//        System.out.print(vector.Point1Y+") ");
+//        vector.Point2X = vector.Point2X*magnitude;
+//        System.out.print("| ("+vector.Point2X+",  ");
+//        vector.Point2Y = vector.Point2Y*magnitude;
+//        System.out.println(vector.Point2Y+")");
+
+        return new VectorAsteroids(vector.Point1X*magnitude, vector.Point1Y*magnitude, vector.Point2X*magnitude, vector.Point2Y*magnitude);
     }
 
 }

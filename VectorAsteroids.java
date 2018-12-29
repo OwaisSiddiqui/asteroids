@@ -30,6 +30,7 @@ public class VectorAsteroids
 
     public void printVectorAsteroids()
     {
+        System.out.println();
         System.out.println("VectorAsteroids with magnitude: "+this.magnitude+" and direction: "+this.direction+"°");
         System.out.println("Coordinates: ("+Point1X+", "+Point1Y+") | ("+Point2X+", "+Point2Y+")");
     }
