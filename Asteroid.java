@@ -44,8 +44,10 @@ public class Asteroid
     VectorAsteroids[] vectorEdgesAsteroids = new VectorAsteroids[6];
     VectorAsteroids[] vectorAsteroidsVectorEdgeNormals = new VectorAsteroids[6];
     VectorAsteroids[] projectionVectors = new VectorAsteroids[6];
+    double[] projectionScalars = new double[6];
+    int idx = 0;
 
-    Asteroid(Ship ship, Main main, int identificationNumber)
+    Asteroid(Ship ship, Main main, int identificationNumber, int x, int y)
     {
         IdentificationNumber = identificationNumber;
         text.setText(String.valueOf(IdentificationNumber));
@@ -59,8 +61,8 @@ public class Asteroid
         text.setFill(Color.PURPLE);
         text.setStyle("-fx-font: 24 arial;");
 
-//        createAsteroidCourse();
-        setAsteroidPosition();
+        createAsteroidCourse();
+        setAsteroidPosition(x, y);
 
         text.setLayoutX(asteroidImage.getLayoutX());
         text.setLayoutY(asteroidImage.getLayoutY());
@@ -75,7 +77,7 @@ public class Asteroid
             vectorAsteroidsVectorEdgeNormals[i].moveVectorToPoint(this);
             vectorAsteroidsVectorEdgeNormals[i].normalizeVector();
             vectorAsteroidsVectorEdgeNormals[i].moveVectorToPoint(this);
-            vectorAsteroidsVectorEdgeNormals[i].printVectorAsteroids();
+//            vectorAsteroidsVectorEdgeNormals[i].printVectorAsteroids();
         }
 
         for (int i = 0; i <= 5; i++)
@@ -83,7 +85,7 @@ public class Asteroid
             projectionVectors[i].moveVectorToPoint(this);
         }
 
-//        MoveAsteroid();
+        MoveAsteroid();
 
         line.setEndX(projectionVectors[0].Point1X);
         line.setEndY(projectionVectors[0].Point1Y);
@@ -146,6 +148,8 @@ public class Asteroid
 //        System.out.println("ORIGINAL: ");
 //        vectorAsteroidsVectorEdgeNormals[0].printVectorAsteroids();
 
+        System.out.println(Arrays.toString(projectionScalars));
+
     }
 
     public void MoveAsteroid()
@@ -161,7 +165,7 @@ public class Asteroid
                 asteroidImage.setLayoutY(asteroidImage.getLayoutY()+changeInY);
 //                DetectBulletCollision(ship);
 //                DetectShipCollision(ship);
-//                bumpAsteroid();
+                bumpAsteroid();
                 text.setLayoutX(asteroidImage.getLayoutX());
                 text.setLayoutY(asteroidImage.getLayoutY());
             }
@@ -169,25 +173,21 @@ public class Asteroid
         timer.start();
     }
 
-//    public void bumpAsteroid()
-//    {
-//        for (int x = 0; x < 5; x++)
-//        {
-//            if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber == this.IdentificationNumber && isCollision)
-//            {
-//                isCollision = false;
-//            }
-//            else if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber != this.IdentificationNumber && this.asteroidImage.getBoundsInParent().intersects(main.asteroidArray[x].asteroidImage.getBoundsInParent()))
-//            {
+    public void bumpAsteroid()
+    {
+        for (int x = 0; x < 5; x++)
+        {
+            if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber != this.IdentificationNumber && isCollision())
+            {
 //                System.out.println("COLLISION WITH ASTEROID "+main.asteroidArray[x].IdentificationNumber+" WITH ASTEROID "+this.IdentificationNumber);
-//                this.asteroidImage.setFill(Color.color(Math.random(), Math.random(), Math.random()));
-//                main.asteroidArray[x].asteroidImage.setFill(Color.color(Math.random(), Math.random(), Math.random()));
-//                changeInX = -changeInX;
-//                changeInY = -changeInY;
-//            }
-//        }
-//    }
-//
+                this.asteroidImage.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+                main.asteroidArray[x].asteroidImage.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+                changeInX = -changeInX;
+                changeInY = -changeInY;
+            }
+        }
+    }
+
 //    public void DetectBulletCollision(Ship ship)
 //    {
 //        if(ship.bulletZero.isBulletFired() && asteroidImage.getBoundsInParent().intersects(ship.bulletZero.bulletImage.getBoundsInParent()) && ship.bulletZero.isBulletFired())
@@ -225,24 +225,24 @@ public class Asteroid
 //        }
 //    }
 //
-//    public void createAsteroidCourse()
-//    {
-//        changeInX = Math.random();
-//        if (rand.nextInt(2) == 0)
-//        {
-//            changeInX = -changeInX;
-//        }
-//        changeInY = Math.random();
-//        if (rand.nextInt(2) == 0)
-//        {
-//            changeInY = -changeInY;
-//        }
-//    }
-//
-    public void setAsteroidPosition()
+    public void createAsteroidCourse()
     {
-        this.asteroidImage.setLayoutX(350);
-        this.asteroidImage.setLayoutY(350);
+        changeInX = Math.random();
+        if (rand.nextInt(2) == 0)
+        {
+            changeInX = -changeInX;
+        }
+        changeInY = Math.random();
+        if (rand.nextInt(2) == 0)
+        {
+            changeInY = -changeInY;
+        }
+    }
+
+    public void setAsteroidPosition(int x, int y)
+    {
+        this.asteroidImage.setLayoutX(x);
+        this.asteroidImage.setLayoutY(y);
     }
 
     //Separating Axis Theorem
@@ -322,9 +322,12 @@ public class Asteroid
             projectionVectors[i] = multiplyVector(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], (getDotProduct(vectorAsteroids[i],
                     vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], 1)/
                     getDotProduct(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], 2)), i);
-            System.out.println("Magnitude: "+getDotProduct(vectorAsteroids[i],
+            projectionScalars[i] = getDotProduct(vectorAsteroids[i],
                     vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], 1)/
-                    getDotProduct(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], 2));
+                    getDotProduct(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], 2);
+//            System.out.println("Magnitude: "+getDotProduct(vectorAsteroids[i],
+//                    vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], 1)/
+//                    getDotProduct(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex], 2));
             i++;
         }
     }
@@ -376,6 +379,80 @@ public class Asteroid
 //        System.out.println(vector.Point2Y+")");
 
         return new VectorAsteroids(vector.Point1X*magnitude, vector.Point1Y*magnitude, vector.Point2X*magnitude, vector.Point2Y*magnitude);
+    }
+
+    public VectorAsteroids findMax(double[] projectionScalarsArray)
+    {
+        double max = projectionScalarsArray[0];
+        int maxIdx = 0;
+        for (int i = 1; i < 6; i++)
+        {
+            if (projectionScalarsArray[i] > max)
+            {
+                max = projectionScalarsArray[i];
+                maxIdx = i;
+            }
+        }
+        return this.projectionVectors[maxIdx];
+    }
+
+    public VectorAsteroids findMin(double[] projectionScalarsArray)
+    {
+        double min = projectionScalarsArray[0];
+        int minIdx = 0;
+        for (int i = 1; i < 6; i++)
+        {
+            if (projectionScalarsArray[i] < min)
+            {
+                min = projectionScalarsArray[i];
+                minIdx = i;
+            }
+        }
+        return this.projectionVectors[minIdx];
+    }
+
+    public boolean isSeparatingAxis(Asteroid asteroid1, Asteroid asteroid2)
+    {
+        VectorAsteroids vector1Max = findMax(asteroid1.projectionScalars);
+        VectorAsteroids vector1Min = findMin(asteroid1.projectionScalars);
+
+        VectorAsteroids vector2Max = findMax(asteroid2.projectionScalars);
+        VectorAsteroids vector2Min = findMin(asteroid2.projectionScalars);
+
+        if (vector1Max.Point1X > vector2Max.Point1X || vector1Max.Point2X > vector2Max.Point2X)
+        {
+            return true;
+        }
+        else if (vector1Max.Point1Y > vector2Max.Point2Y || vector1Max.Point2Y > vector2Max.Point2Y)
+        {
+            return true;
+        }
+        else if (vector1Min.Point1X < vector2Min.Point1X || vector1Min.Point2X < vector2Min.Point2X)
+        {
+            return true;
+        }
+        else return vector1Min.Point1Y < vector2Min.Point1Y || vector1Min.Point2Y < vector2Min.Point2Y;
+    }
+
+    public boolean isCollision()
+    {
+        int numOfCollidingAxis = 0;
+        for (int x = 0; x < 5; x++)
+        {
+            projectVectorOntoNormal(x);
+            if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber != this.IdentificationNumber &&
+                    isSeparatingAxis(this, main.asteroidArray[x]))
+            {
+                System.out.println("**IT IS A SEPARATING AXIS");
+                return false;
+            }
+            else
+            {
+                System.out.println("**COLLIDING AXIS**");
+                numOfCollidingAxis++;
+            }
+        }
+        return numOfCollidingAxis == 5;
     }
 
 }

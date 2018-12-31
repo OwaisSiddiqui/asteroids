@@ -59,31 +59,31 @@ public class VectorAsteroids
 
     public void normalizeVector()
     {
-        System.out.print("Before: ");
-        this.printVectorAsteroids();
-        System.out.println();
+//        System.out.print("Before: ");
+//        this.printVectorAsteroids();
+//        System.out.println();
         this.Point1X = this.Point1X/this.magnitude;
         this.Point1Y = this.Point1Y/this.magnitude;
         this.Point2X = this.Point2X/this.magnitude;
         this.Point2Y = this.Point2Y/this.magnitude;
-        System.out.print("After: ");
-        this.printVectorAsteroids();
+//        System.out.print("After: ");
+//        this.printVectorAsteroids();
         this.magnitude = 1;
-        System.out.println();
+//        System.out.println();
     }
 
     public void scaleVector(int scale)
     {
-        System.out.print("Before: ");
-        this.printVectorAsteroids();
-        System.out.println();
+//        System.out.print("Before: ");
+//        this.printVectorAsteroids();
+//        System.out.println();
         this.Point1X = this.Point1X*scale;
         this.Point1Y = this.Point1Y*scale;
         this.Point2X = this.Point2X*scale;
         this.Point2Y = this.Point2Y*scale;
-        System.out.print("After: ");
-        this.printVectorAsteroids();
-        System.out.println();
+//        System.out.print("After: ");
+//        this.printVectorAsteroids();
+//        System.out.println();
     }
 
 }
