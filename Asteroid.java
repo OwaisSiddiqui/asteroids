@@ -1,31 +1,15 @@
 package sample;
 
-import javafx.animation.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.text.Text;
-
-import java.util.Random;
-
 
 public class Asteroid
 {
     Ship ship;
     Polygon asteroidImage;
-    Random rand = new Random();
-    AnimationTimer timer;
-    double changeInX;
-    double changeInY;
     Main main;
     int IdentificationNumber;
-    Text text = new Text();
-    Line line = new Line();
-    Line line1 = new Line();
-    Line line2 = new Line();
-    Line line3 = new Line();
-    Line line4 = new Line();
-    Line line5 = new Line();
     Double[] polygonPointsArray = new Double[]
             {
                     0.0, 70.0,
@@ -40,11 +24,25 @@ public class Asteroid
     VectorAsteroids[] vectorAsteroidsVectorEdgeNormals = new VectorAsteroids[6];
     VectorAsteroids[] projectionVectors = new VectorAsteroids[6];
     double[] projectionScalars = new double[6];
+    Line line = new Line();
+    Line line1 = new Line();
+    Line line2 = new Line();
+    Line line3 = new Line();
+    Line line4 = new Line();
+    Line line5 = new Line();
+    Line line6 = new Line();
+    Line line7 = new Line();
+    Line line8 = new Line();
+    Line line9 = new Line();
+    Line line10 = new Line();
+    Line line11 = new Line();
+    Line[] lineArray = new Line[6];
+    Line[] newLineArray = new Line[6];
+    Color[] colorArray = new Color[6];
 
     Asteroid(Ship ship, Main main, int identificationNumber, int x, int y)
     {
         this.IdentificationNumber = identificationNumber;
-        main.asteroidArray[this.IdentificationNumber] = this;
 
         this.ship = ship;
         this.main = main;
@@ -54,54 +52,81 @@ public class Asteroid
         this.asteroidImage.setFill(Color.TRANSPARENT);
         this.asteroidImage.setStroke(Color.BLACK);
 
-        this.createAsteroidCourse();
-        this.setAsteroidPosition(x, y);
+        setAsteroidPosition(x, y);
         this.initializeVectors();
 
-        this.bumpAsteroid();
+       lineArray[0] = line;
+       lineArray[1] = line1;
+       lineArray[2] = line2;
+       lineArray[3] = line3;
+       lineArray[4] = line4;
+       lineArray[5] = line5;
+       newLineArray[0] = line6;
+       newLineArray[1] = line7;
+       newLineArray[2] = line8;
+       newLineArray[3] = line9;
+       newLineArray[4] = line10;
+       newLineArray[5] = line11;
+
+       colorArray[0] = Color.RED;
+       colorArray[1] = Color.LIMEGREEN;
+       colorArray[2] = Color.BLUE;
+       colorArray[3] = Color.GREEN;
+       colorArray[4] = Color.ORANGE;
+       colorArray[5] = Color.CYAN;
+
+       for (int i = 0; i < 6; i++)
+       {
+           newLineArray[i].setEndX(vectorAsteroidsVectorEdgeNormals[i].InitialPointX);
+           newLineArray[i].setEndY(vectorAsteroidsVectorEdgeNormals[i].InitialPointY);
+           newLineArray[i].setStartX(vectorAsteroidsVectorEdgeNormals[i].TerminalPointX);
+           newLineArray[i].setStartY(vectorAsteroidsVectorEdgeNormals[i].TerminalPointY);
+
+           newLineArray[i].setStroke(colorArray[i]);
+
+           lineArray[i].setEndX(getXComponent(vectorAsteroidsVectorEdgeNormals[i]).InitialPointX);
+           lineArray[i].setEndY(getXComponent(vectorAsteroidsVectorEdgeNormals[i]).InitialPointY);
+           lineArray[i].setStartX(getXComponent(vectorAsteroidsVectorEdgeNormals[i]).TerminalPointX);
+           lineArray[i].setStartY(getXComponent(vectorAsteroidsVectorEdgeNormals[i]).TerminalPointY);
+           lineArray[i].setStroke(colorArray[i]);
+       }
+
+    }
+
+    public void moveAsteroid()
+    {
+        bumpAsteroid();
     }
 
     public void bumpAsteroid()
     {
         for (int x = 3; x <= 4; x++)
         {
-            if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber != this.IdentificationNumber
-            && isCollision(main.asteroidArray[x]))
+            System.out.println(IdentificationNumber);
+            System.out.println(main.asteroidArray[x]);
+            if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber != IdentificationNumber
+            && this.isCollision(main.asteroidArray[x]))
             {
-                this.asteroidImage.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+//                asteroidImage.setFill(Color.color(Math.random(), Math.random(), Math.random()));
             }
-        }
-    }
-
-    public void createAsteroidCourse()
-    {
-        changeInX = Math.random();
-        if (rand.nextInt(2) == 0)
-        {
-            changeInX = -changeInX;
-        }
-        changeInY = Math.random();
-        if (rand.nextInt(2) == 0)
-        {
-            changeInY = -changeInY;
         }
     }
 
     public void setAsteroidPosition(int x, int y)
     {
-        this.asteroidImage.setLayoutX(x);
-        this.asteroidImage.setLayoutY(y);
+        asteroidImage.setLayoutX(x);
+        asteroidImage.setLayoutY(y);
     }
 
     public void createAsteroidVectors()
     {
         for (int i = 0, idx = 0; i <= 10 && idx <= 5; i+=2, idx++)
         {
-            this.vectorAsteroids[idx] = new VectorAsteroids(
-                    this.asteroidImage.getLayoutX(),
-                    this.asteroidImage.getLayoutY(),
-                    this.asteroidImage.getPoints().get(i)+this.asteroidImage.getLayoutX(),
-                    this.asteroidImage.getPoints().get(i+1)+this.asteroidImage.getLayoutY());
+            vectorAsteroids[idx] = new VectorAsteroids(
+                    asteroidImage.getLayoutX(),
+                    asteroidImage.getLayoutY(),
+                    asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
+                    asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY());
         }
     }
 
@@ -111,19 +136,19 @@ public class Asteroid
         {
            if (i <= 8)
            {
-               this.vectorEdgesAsteroids[idx] = new VectorAsteroids(
-                       this.asteroidImage.getPoints().get(i)+this.asteroidImage.getLayoutX(),
-                       this.asteroidImage.getPoints().get(i+1)+this.asteroidImage.getLayoutY(),
-                       this.asteroidImage.getPoints().get(i+2)+this.asteroidImage.getLayoutX(),
-                       this.asteroidImage.getPoints().get(i+3)+this.asteroidImage.getLayoutY());
+               vectorEdgesAsteroids[idx] = new VectorAsteroids(
+                       asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
+                       asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY(),
+                       asteroidImage.getPoints().get(i+2)+asteroidImage.getLayoutX(),
+                       asteroidImage.getPoints().get(i+3)+asteroidImage.getLayoutY());
            }
            else if (i == 10)
            {
                this.vectorEdgesAsteroids[idx] = new VectorAsteroids(
-                       this.asteroidImage.getPoints().get(i)+this.asteroidImage.getLayoutX(),
-                       this.asteroidImage.getPoints().get(i+1)+this.asteroidImage.getLayoutY(),
-                       this.asteroidImage.getPoints().get(0)+this.asteroidImage.getLayoutX(),
-                       this.asteroidImage.getPoints().get(1)+this.asteroidImage.getLayoutY());
+                       asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
+                       asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY(),
+                       asteroidImage.getPoints().get(0)+asteroidImage.getLayoutX(),
+                       asteroidImage.getPoints().get(1)+asteroidImage.getLayoutY());
            }
         }
     }
@@ -135,13 +160,16 @@ public class Asteroid
         int i = 0;
         while (i <= 5)
         {
-            vectorChangeInX = this.vectorEdgesAsteroids[i].Point2X - this.vectorEdgesAsteroids[i].Point1X;
-            vectorChangeInY = this.vectorEdgesAsteroids[i].Point2Y - this.vectorEdgesAsteroids[i].Point1Y;
-            this.vectorAsteroidsVectorEdgeNormals[i] = new VectorAsteroids(
-                    -vectorChangeInY+this.asteroidImage.getLayoutX(),
-                    vectorChangeInX+this.asteroidImage.getLayoutY(),
-                    vectorChangeInY+this.asteroidImage.getLayoutX(),
-                    -vectorChangeInX+this.asteroidImage.getLayoutY());
+            vectorChangeInX = vectorEdgesAsteroids[i].TerminalPointX - vectorEdgesAsteroids[i].InitialPointX;
+            vectorChangeInY = vectorEdgesAsteroids[i].TerminalPointY - vectorEdgesAsteroids[i].InitialPointY;
+            vectorAsteroidsVectorEdgeNormals[i] = new VectorAsteroids(
+                    asteroidImage.getLayoutX(),
+                    asteroidImage.getLayoutY(),
+                    vectorChangeInY+asteroidImage.getLayoutX(),
+                    -vectorChangeInX+asteroidImage.getLayoutY());
+//            vectorAsteroidsVectorEdgeNormals[i].normalizeVector();
+//            vectorAsteroidsVectorEdgeNormals[i].moveVectorToPoint(this);
+            vectorAsteroidsVectorEdgeNormals[i].printVectorAsteroids();
             i++;
         }
     }
@@ -160,17 +188,18 @@ public class Asteroid
                     vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex])/
                     getDotProduct(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex],
                             vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex]);
+            projectionVectors[i].moveVectorToPoint(this);
             i++;
         }
     }
 
     public double getDotProduct(VectorAsteroids vector1, VectorAsteroids vector2)
     {
-        double ax = vector1.Point2X-vector1.Point1X;
-        double ay = vector1.Point2Y-vector1.Point1Y;
+        double ax = vector1.TerminalPointX-vector1.InitialPointX;
+        double ay = vector1.TerminalPointY-vector1.InitialPointY;
 
-        double bx = vector2.Point2X-vector2.Point1X;
-        double by = vector2.Point2Y-vector2.Point1Y;
+        double bx = vector2.TerminalPointX-vector2.InitialPointX;
+        double by = vector2.TerminalPointY-vector2.InitialPointY;
 
         return (ax*bx) + (ay*by);
     }
@@ -178,73 +207,68 @@ public class Asteroid
     public VectorAsteroids multiplyVector(VectorAsteroids vector, double magnitude)
     {
         return new VectorAsteroids(
-                vector.Point1X*magnitude, vector.Point1Y*magnitude,
-                vector.Point2X*magnitude, vector.Point2Y*magnitude);
+                vector.InitialPointX*magnitude, vector.InitialPointY*magnitude,
+                vector.TerminalPointX*magnitude, vector.TerminalPointY*magnitude);
     }
 
-    public VectorAsteroids findMax(double[] projectionScalarsArray)
-    {
-        double max = projectionScalarsArray[0];
-        int maxIdx = 0;
-        for (int i = 1; i < 6; i++)
-        {
-            if (projectionScalarsArray[i] > max)
-            {
-                max = projectionScalarsArray[i];
-                maxIdx = i;
-            }
-        }
-        return this.projectionVectors[maxIdx];
-    }
+//    public VectorAsteroids findMaxMagnitudeVector()
+//    {
+//        double max = this.projectionScalars[0];
+//        int maxIdx = 0;
+//        for (int i = 1; i < 6; i++)
+//        {
+//            if (this.projectionScalars[i] > max)
+//            {
+//                max = this.projectionScalars[i];
+//                maxIdx = i;
+//            }
+//        }
+//        if (projectionVectors[maxIdx].TerminalPointX > this.findMinMagnitudeVector().TerminalPointX)
+//        {
+////            return
+//        }
+//    }
 
-    public VectorAsteroids findMin(double[] projectionScalarsArray)
+    public VectorAsteroids findMinMagnitudeVector()
     {
-        double min = projectionScalarsArray[0];
+        double min = this.projectionScalars[0];
         int minIdx = 0;
         for (int i = 1; i < 6; i++)
         {
-            if (projectionScalarsArray[i] < min)
+            if (this.projectionScalars[i] < min)
             {
-                min = projectionScalarsArray[i];
+                min = this.projectionScalars[i];
                 minIdx = i;
             }
         }
         return this.projectionVectors[minIdx];
     }
 
-    public boolean isSeparatingAxis(Asteroid asteroid1, Asteroid asteroid2)
+    public VectorAsteroids getXComponent(VectorAsteroids vector)
     {
-        VectorAsteroids vector1Max = findMax(asteroid1.projectionScalars);
-        VectorAsteroids vector1Min = findMin(asteroid1.projectionScalars);
-        VectorAsteroids vector2Max = findMax(asteroid2.projectionScalars);
-        VectorAsteroids vector2Min = findMin(asteroid2.projectionScalars);
+        return new VectorAsteroids(
+                vector.InitialPointX,
+                vector.InitialPointY,
+                vector.TerminalPointX,
+                vector.InitialPointY);
+    }
 
-        for (int i = 0; i < 6; i++)
-        {
-            vectorAsteroidsVectorEdgeNormals[i].moveVectorToPoint(asteroid1);
-            vectorAsteroidsVectorEdgeNormals[i].normalizeVector();
-            vectorAsteroidsVectorEdgeNormals[i].moveVectorToPoint(asteroid1);
-            projectionVectors[i].moveVectorToPoint(asteroid1);
-        }
+    public double getXComponentPoint(VectorAsteroids vector)
+    {
+        return vector.TerminalPointX;
+    }
 
-        if (!(vector1Max.Point1X > vector2Max.Point1X) || !(vector1Max.Point2X > vector2Max.Point2X))
-        {
-            return true;
-        }
-        else if (!(vector1Max.Point1Y > vector2Max.Point1Y) || !(vector1Max.Point2Y > vector2Max.Point2Y))
-        {
-            return true;
-        }
+    public boolean isSeparatingAxis(Asteroid asteroid, int axisNumber)
+    {
         return false;
-
     }
 
     public boolean isCollision(Asteroid asteroid)
     {
-        for (int x = 0; x < 6; x++)
+        for (int axisNumber = 0; axisNumber < 6; axisNumber++)
         {
-            projectVectorOntoNormal(x);
-            if (isSeparatingAxis(this, asteroid))
+            this.projectVectorOntoNormal(axisNumber);
+            if (this.isSeparatingAxis(asteroid, axisNumber))
             {
                 return false;
             }
