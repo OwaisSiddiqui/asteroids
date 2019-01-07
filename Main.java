@@ -10,12 +10,13 @@ public class Main extends Application
 {
     Ship ship = new Ship();
     Asteroid[] asteroidArray = new Asteroid[5];
-    Asteroid asteroidThree = new Asteroid(ship, this, 3, 500, 400);
-    Asteroid asteroidFour = new Asteroid(ship, this, 4, 300, 300);
+    Asteroid asteroidThree = new Asteroid(ship, this, 3, 300, 100);
+    Asteroid asteroidFour = new Asteroid(ship, this, 4, 200, 150);
     Group group = new Group(asteroidThree.asteroidImage, asteroidFour.asteroidImage,
                             asteroidThree.line, asteroidThree.line1, asteroidThree.line2, asteroidThree.line3, asteroidThree.line4, asteroidThree.line5,
                             asteroidThree.line6, asteroidThree.line7, asteroidThree.line8, asteroidThree.line9, asteroidThree.line10, asteroidThree.line11,
-                            asteroidFour.line, asteroidFour.line1, asteroidFour.line2, asteroidFour.line3, asteroidFour.line4, asteroidFour.line5);
+                            asteroidFour.line, asteroidFour.line1, asteroidFour.line2, asteroidFour.line3, asteroidFour.line4, asteroidFour.line5,
+                            asteroidFour.line6, asteroidFour.line7, asteroidFour.line8, asteroidFour.line9, asteroidFour.line10, asteroidFour.line11);
     Scene scene = new Scene(group, 700, 700);
 
     @Override
