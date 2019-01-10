@@ -1,5 +1,7 @@
 package sample;
 
+import java.util.Vector;
+
 public class VectorAsteroids {
     double magnitude;
     double direction;
@@ -72,26 +74,17 @@ public class VectorAsteroids {
         this.InitialPointY = y;
         this.TerminalPointX = this.TerminalPointX - changeInX;
         this.TerminalPointY = this.TerminalPointY - changeInY;
+        this.b = TerminalPointY-(this.slope*TerminalPointX);
     }
 
-    public void moveVectorToAxis(VectorAsteroids axis, Asteroid asteroid)
+    public void moveVectorToAxis(VectorAsteroids axis, Double magnitudeToMove, double signX, double signY)
     {
-        axis.moveVectorToPoint(this.InitialPointX, this.InitialPointY);
-        this.InitialPointX = axis.TerminalPointX;
-        this.InitialPointY = axis.TerminalPointY;
-        axis.moveVectorToPoint(this.TerminalPointX, this.TerminalPointY);
-        this.TerminalPointX = axis.TerminalPointX;
-        this.TerminalPointY = axis.TerminalPointY;
+        double changeInX = Math.abs(axis.TerminalPointX - axis.InitialPointX)*magnitudeToMove*signX;
+        double changeInY = Math.abs(axis.TerminalPointY - axis.InitialPointY)*magnitudeToMove*signY;
+        this.InitialPointX = changeInX + this.InitialPointX;
+        this.InitialPointY = changeInY + this.InitialPointY;
+        this.TerminalPointX = changeInX + this.TerminalPointX;
+        this.TerminalPointY = changeInY + this.TerminalPointY;
+        this.b = this.InitialPointY-(this.slope*this.InitialPointX);
     }
-
-    public void scaleVector(double magnitude, Asteroid asteroid)
-    {
-        this.normalizeVector();
-        this.InitialPointX = this.InitialPointX*magnitude;
-        this.InitialPointY = this.InitialPointY*magnitude;
-        this.TerminalPointX = this.TerminalPointX*magnitude;
-        this.TerminalPointY = this.TerminalPointY*magnitude;
-        this.magnitude = Math.sqrt(Math.pow((TerminalPointX - InitialPointX), 2) + Math.pow((TerminalPointY - InitialPointY), 2));
-    }
-
 }
