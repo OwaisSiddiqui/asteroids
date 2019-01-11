@@ -161,7 +161,7 @@ public class Asteroid
                     vectorChangeInY+asteroidImage.getLayoutX(),
                     -vectorChangeInX+asteroidImage.getLayoutY());
             vectorAsteroidsVectorEdgeNormals[i].normalizeVector();
-            vectorAsteroidsVectorEdgeNormals[i].moveVectorToAsteroid(this);
+            vectorAsteroidsVectorEdgeNormals[i].moveVectorToPoint(this.asteroidImage.getLayoutX(), this.asteroidImage.getLayoutY());
             i++;
         }
     }
@@ -181,7 +181,7 @@ public class Asteroid
                     vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex])/
                     getDotProduct(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex],
                             vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex]);
-            projectionVectors[i].moveVectorToAsteroid(this);
+            projectionVectors[i].moveVectorToPoint(this.asteroidImage.getLayoutX(), this.asteroidImage.getLayoutY());
             i++;
         }
     }
@@ -298,53 +298,43 @@ public class Asteroid
 
     public boolean isCollision(Asteroid asteroid)
     {
-        int axisNumber = 1;
+        int axisNumber = 0;
         double finalMagnitude;
         double signOfX = 1;
         double signOfY = 1;
+
         this.projectVectorOntoNormal(axisNumber);
-        VectorAsteroids[] newProjectionVectors = this.projectionVectors;
         asteroid.projectVectorOntoNormal(axisNumber);
-        VectorAsteroids[] newVectorAsteroidVectorEdgeNormals = this.vectorAsteroidsVectorEdgeNormals;
-        VectorAsteroids[] newVectorEdgesAsteroids = this.vectorEdgesAsteroids;
-        VectorAsteroids newVectorEdgeNormal = newVectorAsteroidVectorEdgeNormals[axisNumber];
+
+        VectorAsteroids[] newProjectionVectors = this.projectionVectors;
+        VectorAsteroids[] newVectorAsteroidVectorEdgesNormals = this.vectorAsteroidsVectorEdgeNormals;
+        VectorAsteroids[] newVectorAsteroidVectorEdges = this.vectorEdgesAsteroids;
+        VectorAsteroids newVectorEdgeNormal = newVectorAsteroidVectorEdgesNormals[axisNumber];
+        VectorAsteroids newVectorEdge = newVectorAsteroidVectorEdges[axisNumber];
+
         newVectorEdgeNormal.normalizeVector();
-        newVectorEdgeNormal.moveVectorToPoint(350, 350);
-        double vectorEdgeNormalB = newVectorEdgeNormal.b;
-        finalMagnitude = Math.abs(newProjectionVectors[0].b - vectorEdgeNormalB)/
+        newVectorEdge.normalizeVector();
+        newVectorEdgeNormal.moveVectorToPoint(350,350);
+        newVectorEdgeNormal.printVectorAsteroids();
+        double newVectorEdgeNormalB = newVectorEdgeNormal.b;
+
+        finalMagnitude = Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
                 Math.sqrt(1+Math.pow(newProjectionVectors[0].slope, 2));
-        newProjectionVectors[0].moveVectorToAxis(newVectorEdgesAsteroids[axisNumber], finalMagnitude, signOfX, signOfY);
-        if (Math.round(Math.abs(newProjectionVectors[0].b - vectorEdgeNormalB)/
-                Math.sqrt(1+Math.pow(newProjectionVectors[0].slope, 2))) != 0)
-        {
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdgesAsteroids[axisNumber], finalMagnitude, -1, -1);
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdgesAsteroids[axisNumber], finalMagnitude, 1, -1);
-            signOfX = 1;
-            signOfY = -1;
-        }
-        if (Math.round(Math.abs(newProjectionVectors[0].b - vectorEdgeNormalB)/
-                Math.sqrt(1+Math.pow(newProjectionVectors[0].slope, 2))) != 0)
-        {
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdgesAsteroids[axisNumber], finalMagnitude, -1, 1);
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdgesAsteroids[axisNumber], finalMagnitude, -1, 1);
-            signOfX = -1;
-            signOfY = 1;
 
-        }
-        if (Math.round(Math.abs(newProjectionVectors[0].b - vectorEdgeNormalB)/
-                Math.sqrt(1+Math.pow(newProjectionVectors[0].slope, 2))) != 0)
-        {
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdgesAsteroids[axisNumber], finalMagnitude, 1, -1);
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdgesAsteroids[axisNumber], finalMagnitude, -1, -1);
+        newProjectionVectors[0].printVectorAsteroids();
+        double changeInX = Math.abs(newVectorEdge.TerminalPointX - newVectorEdge.InitialPointX)*finalMagnitude*-1;
+        double changeInY = Math.abs(newVectorEdge.TerminalPointY - newVectorEdge.InitialPointY)*finalMagnitude*1;
 
-            signOfX = -1;
-            signOfY = -1;
-        }
-        for (int i = 1; i < 6; i++)
+        if (this.IdentificationNumber == 3)
         {
-            newProjectionVectors[i].printVectorAsteroids();
-            newProjectionVectors[i].moveVectorToAxis(newVectorEdgeNormal, finalMagnitude, signOfX, signOfY);
+            System.out.println(finalMagnitude);
         }
+
+        for (int i = 0; i < 6; i++)
+        {
+            newProjectionVectors[i].moveVectorToAxis(vectorEdgesAsteroids[axisNumber], finalMagnitude, -1, 1, changeInX, changeInY);
+        }
+
         for (int i = 0; i < 6; i++)
         {
             newLineArray[i].setEndX(newProjectionVectors[i].InitialPointX);
@@ -353,6 +343,7 @@ public class Asteroid
             newLineArray[i].setStartY(newProjectionVectors[i].TerminalPointY);
             newLineArray[i].setStroke(colorArray[i]);
         }
+
         return false;
     }
 
