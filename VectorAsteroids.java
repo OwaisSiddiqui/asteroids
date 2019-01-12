@@ -52,7 +52,7 @@ public class VectorAsteroids {
         this.TerminalPointX = this.TerminalPointX / this.magnitude;
         this.TerminalPointY = this.TerminalPointY / this.magnitude;
         this.magnitude = Math.sqrt(Math.pow((TerminalPointX - InitialPointX), 2) + Math.pow((TerminalPointY - InitialPointY), 2));
-        this.b = TerminalPointY-(this.slope*TerminalPointX);
+        this.b = this.TerminalPointY-(this.slope*this.TerminalPointX);
     }
 
     public void moveVectorToPoint(double x, double y)
@@ -63,7 +63,7 @@ public class VectorAsteroids {
         this.InitialPointY = y;
         this.TerminalPointX = this.TerminalPointX - changeInX;
         this.TerminalPointY = this.TerminalPointY - changeInY;
-        this.b = TerminalPointY-(this.slope*TerminalPointX);
+        this.b = this.TerminalPointY-(this.slope*this.TerminalPointX);
     }
 
     public void scaleVector(double magnitude)
@@ -76,12 +76,14 @@ public class VectorAsteroids {
         this.magnitude = Math.sqrt(Math.pow((TerminalPointX - InitialPointX), 2) + Math.pow((TerminalPointY - InitialPointY), 2));
     }
 
-    public void moveVectorToAxis(VectorAsteroids axis, Double magnitudeToMove, double signX, double signY,
-                                 double changeInX, double changeInY)
+    public void moveVectorToAxis(VectorAsteroids axis, double finalMagnitude, double signX, double signY)
     {
-        this.InitialPointX = changeInX + this.InitialPointX;
-        this.TerminalPointX = changeInX + this.TerminalPointX;
-        this.InitialPointY = changeInY + this.InitialPointY;
-        this.TerminalPointY = changeInY + this.TerminalPointY;
+        double changeInX = Math.abs(axis.TerminalPointX - axis.InitialPointX)*finalMagnitude*signX;
+        double changeInY = Math.abs(axis.TerminalPointY - axis.InitialPointY)*finalMagnitude*signY;
+        this.InitialPointX = changeInX + InitialPointX;
+        this.TerminalPointX = changeInX + TerminalPointX;
+        this.InitialPointY = changeInY + InitialPointY;
+        this.TerminalPointY = changeInY + TerminalPointY;
+        this.b = this.TerminalPointY-(this.slope*this.TerminalPointX);
     }
 }
