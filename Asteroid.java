@@ -4,9 +4,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 
-import java.util.Arrays;
-import java.util.Random;
-
 public class Asteroid
 {
     Ship ship;
@@ -57,25 +54,25 @@ public class Asteroid
 
         setAsteroidPosition(x, y);
 
-       lineArray[0] = line;
-       lineArray[1] = line1;
-       lineArray[2] = line2;
-       lineArray[3] = line3;
-       lineArray[4] = line4;
-       lineArray[5] = line5;
-       newLineArray[0] = line6;
-       newLineArray[1] = line7;
-       newLineArray[2] = line8;
-       newLineArray[3] = line9;
-       newLineArray[4] = line10;
-       newLineArray[5] = line11;
+        lineArray[0] = line;
+        lineArray[1] = line1;
+        lineArray[2] = line2;
+        lineArray[3] = line3;
+        lineArray[4] = line4;
+        lineArray[5] = line5;
+        newLineArray[0] = line6;
+        newLineArray[1] = line7;
+        newLineArray[2] = line8;
+        newLineArray[3] = line9;
+        newLineArray[4] = line10;
+        newLineArray[5] = line11;
 
-       colorArray[0] = Color.RED;
-       colorArray[1] = Color.LIMEGREEN;
-       colorArray[2] = Color.BLUE;
-       colorArray[3] = Color.GREEN;
-       colorArray[4] = Color.ORANGE;
-       colorArray[5] = Color.CYAN;
+        colorArray[0] = Color.RED;
+        colorArray[1] = Color.LIMEGREEN;
+        colorArray[2] = Color.BLUE;
+        colorArray[3] = Color.GREEN;
+        colorArray[4] = Color.ORANGE;
+        colorArray[5] = Color.CYAN;
 
 //       for (int i = 0; i < 6; i++)
 //       {
@@ -98,7 +95,7 @@ public class Asteroid
         for (int x = 3; x <= 4; x++)
         {
             if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber != this.IdentificationNumber
-            && this.isCollision(main.asteroidArray[x]))
+                    && this.isCollision(main.asteroidArray[x]))
             {
                 this.asteroidImage.setFill(Color.color(Math.random(), Math.random(), Math.random()));
             }
@@ -127,22 +124,22 @@ public class Asteroid
     {
         for (int i = 0, idx = 0; i <= 10 && idx <= 5; i+=2, idx++)
         {
-           if (i <= 8)
-           {
-               vectorEdgesAsteroids[idx] = new VectorAsteroids(
-                       asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
-                       asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY(),
-                       asteroidImage.getPoints().get(i+2)+asteroidImage.getLayoutX(),
-                       asteroidImage.getPoints().get(i+3)+asteroidImage.getLayoutY());
-           }
-           else if (i == 10)
-           {
-               this.vectorEdgesAsteroids[idx] = new VectorAsteroids(
-                       asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
-                       asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY(),
-                       asteroidImage.getPoints().get(0)+asteroidImage.getLayoutX(),
-                       asteroidImage.getPoints().get(1)+asteroidImage.getLayoutY());
-           }
+            if (i <= 8)
+            {
+                vectorEdgesAsteroids[idx] = new VectorAsteroids(
+                        asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
+                        asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY(),
+                        asteroidImage.getPoints().get(i+2)+asteroidImage.getLayoutX(),
+                        asteroidImage.getPoints().get(i+3)+asteroidImage.getLayoutY());
+            }
+            else if (i == 10)
+            {
+                this.vectorEdgesAsteroids[idx] = new VectorAsteroids(
+                        asteroidImage.getPoints().get(i)+asteroidImage.getLayoutX(),
+                        asteroidImage.getPoints().get(i+1)+asteroidImage.getLayoutY(),
+                        asteroidImage.getPoints().get(0)+asteroidImage.getLayoutX(),
+                        asteroidImage.getPoints().get(1)+asteroidImage.getLayoutY());
+            }
         }
     }
 
@@ -174,9 +171,9 @@ public class Asteroid
         {
             projectionVectors[i] = multiplyVector(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex]
                     ,(getDotProduct(vectorAsteroids[i],
-                    vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex])/
-                    getDotProduct(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex],
-                            vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex])));
+                            vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex])/
+                            getDotProduct(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex],
+                                    vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex])));
             projectionScalars[i] = getDotProduct(vectorAsteroids[i],
                     vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex])/
                     getDotProduct(vectorAsteroidsVectorEdgeNormals[vectorAsteroidVectorEdgeNormalsIndex],
@@ -298,71 +295,78 @@ public class Asteroid
 
     public boolean isCollision(Asteroid asteroid)
     {
-        int axisNumber = 1;
         double finalMagnitude;
         double signOfX = 1;
         double signOfY = 1;
+        VectorAsteroids[] newProjectionVectors = new VectorAsteroids[6];
+        VectorAsteroids[] newVectorAsteroidVectorEdgesNormals;
+        VectorAsteroids[] newVectorAsteroidVectorEdges;
+        VectorAsteroids newVectorEdgeNormal;
+        VectorAsteroids newVectorEdge;
 
-        this.projectVectorOntoNormal(axisNumber);
-        asteroid.projectVectorOntoNormal(axisNumber);
-
-        VectorAsteroids[] newProjectionVectors = this.projectionVectors;
-        VectorAsteroids[] newVectorAsteroidVectorEdgesNormals = this.vectorAsteroidsVectorEdgeNormals;
-        VectorAsteroids[] newVectorAsteroidVectorEdges = this.vectorEdgesAsteroids;
-        VectorAsteroids newVectorEdgeNormal = newVectorAsteroidVectorEdgesNormals[axisNumber];
-        VectorAsteroids newVectorEdge = newVectorAsteroidVectorEdges[axisNumber];
-
-        newVectorEdge.normalizeVector();
-        newVectorEdgeNormal.moveVectorToPoint(350,350);
-        double newVectorEdgeNormalB = newVectorEdgeNormal.b;
-        double newVectorProjectionSlope = newProjectionVectors[0].slope;
-
-        finalMagnitude = Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
-                Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2));
-
-        System.out.println(finalMagnitude);
-
-        newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, signOfX, signOfY);
-
-        System.out.println("Fin: "+Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
-                Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2)));
-
-        if (Math.round(Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
-                Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2))) != 0)
+        for (int axisNumber = 0; axisNumber < 6; axisNumber++)
         {
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, -1, -1);
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, 1, -1);
-            signOfX = 1;
-            signOfY = -1;
-        }
-        if (Math.round(Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
-                Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2))) != 0)
-        {
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, -1, 1);
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, -1, 1);
-            signOfX = -1;
-            signOfY = 1;
+            this.projectVectorOntoNormal(axisNumber);
+            asteroid.projectVectorOntoNormal(axisNumber);
 
-        }
-        if (Math.round(Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
-                Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2))) != 0)
-        {
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, 1, -1);
-            newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, -1, -1);
+            newProjectionVectors = this.projectionVectors;
+            newVectorAsteroidVectorEdgesNormals = this.vectorAsteroidsVectorEdgeNormals;
+            newVectorAsteroidVectorEdges = this.vectorEdgesAsteroids;
+            newVectorEdgeNormal = newVectorAsteroidVectorEdgesNormals[axisNumber];
+            newVectorEdge = newVectorAsteroidVectorEdges[axisNumber];
 
-            signOfX = -1;
-            signOfY = -1;
-        }
+            newVectorEdge.normalizeVector();
+            newVectorEdgeNormal.moveVectorToPoint(350,350);
+            double newVectorEdgeNormalB = newVectorEdgeNormal.b;
+            double newVectorProjectionSlope = newProjectionVectors[0].slope;
 
-        System.out.println("Fin: "+Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
-                Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2)));
+            finalMagnitude = Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
+                    Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2));
 
-        System.out.println(signOfX);
-        System.out.println(signOfY);
+            System.out.println(finalMagnitude);
 
-        for (int i = 1; i < 6; i++)
-        {
-            newProjectionVectors[i].moveVectorToAxis(newVectorEdge, finalMagnitude, signOfX, signOfY);
+            newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, signOfX, signOfY);
+
+            System.out.println("Fin: "+Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
+                    Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2)));
+
+            if (Math.round(Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
+                    Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2))) != 0)
+            {
+                newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, -1, -1);
+                newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, 1, -1);
+                signOfX = 1;
+                signOfY = -1;
+            }
+            if (Math.round(Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
+                    Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2))) != 0)
+            {
+                newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, -1, 1);
+                newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, -1, 1);
+                signOfX = -1;
+                signOfY = 1;
+
+            }
+            if (Math.round(Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
+                    Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2))) != 0)
+            {
+                newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, 1, -1);
+                newProjectionVectors[0].moveVectorToAxis(newVectorEdge, finalMagnitude, -1, -1);
+
+                signOfX = -1;
+                signOfY = -1;
+            }
+
+            System.out.println("Fin: "+Math.abs(newProjectionVectors[0].b - newVectorEdgeNormalB)/
+                    Math.sqrt(1+Math.pow(newVectorProjectionSlope, 2)));
+
+            System.out.println(signOfX);
+            System.out.println(signOfY);
+
+            for (int i = 1; i < 6; i++)
+            {
+                newProjectionVectors[i].moveVectorToAxis(newVectorEdge, finalMagnitude, signOfX, signOfY);
+            }
         }
 
         for (int i = 0; i < 6; i++)
