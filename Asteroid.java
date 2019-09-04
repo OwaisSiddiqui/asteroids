@@ -1,8 +1,12 @@
 package sample;
 
+import javafx.animation.AnimationTimer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Text;
+
+import java.util.Random;
 
 public class Asteroid
 {
@@ -39,8 +43,14 @@ public class Asteroid
     Line[] lineArray = new Line[6];
     Line[] newLineArray = new Line[6];
     Color[] colorArray = new Color[6];
+    Text text = new Text();
+    double changeInX;
+    double changeInY;
+    boolean isCollision = true;
+    Random rand = new Random();
+    AnimationTimer timer;
 
-    Asteroid(Ship ship, Main main, int identificationNumber, int x, int y)
+    Asteroid(Ship ship, Main main, int identificationNumber)
     {
         this.IdentificationNumber = identificationNumber;
 
@@ -53,32 +63,89 @@ public class Asteroid
         this.asteroidImage.setFill(Color.TRANSPARENT);
         this.asteroidImage.setStroke(Color.BLACK);
 
-        setAsteroidPosition(x, y);
+        createAsteroidCourse();
+        setAsteroidPosition();
+
+        text.setLayoutX(asteroidImage.getLayoutX());
+        text.setLayoutY(asteroidImage.getLayoutY());
+
+        line.setEndX((changeInX+asteroidImage.getLayoutX())*10);
+        line.setEndY((changeInY+asteroidImage.getLayoutY())*10);
+        line.setStartX((changeInX+asteroidImage.getLayoutX()));
+        line.setStartY((changeInY+asteroidImage.getLayoutY()));
+
+        MoveAsteroid();
 
         this.initializeVectors();
     }
 
-    public void moveAsteroid()
+    public void MoveAsteroid()
     {
-        bumpAsteroid();
+        timer = new AnimationTimer()
+        {
+            @Override
+            public void handle(long now)
+            {
+                text.setLayoutX(asteroidImage.getLayoutX());
+                text.setLayoutY(asteroidImage.getLayoutY());
+                asteroidImage.setLayoutX(asteroidImage.getLayoutX()+changeInX);
+                asteroidImage.setLayoutY(asteroidImage.getLayoutY()+changeInY);
+                keepAsteroidInBounds();
+                bumpAsteroid();
+                text.setLayoutX(asteroidImage.getLayoutX());
+                text.setLayoutY(asteroidImage.getLayoutY());
+            }
+        };
+        timer.start();
     }
 
     public void bumpAsteroid()
     {
-        for (int x = 3; x <= 4; x++)
+        for (int x = 0; x < 5; x++)
         {
-            if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber != this.IdentificationNumber
-                    && this.isCollision(main.asteroidArray[x]))
+            if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber == this.IdentificationNumber && isCollision)
             {
+                isCollision = false;
+            }
+            else if (main.asteroidArray[x] != null && main.asteroidArray[x].IdentificationNumber != this.IdentificationNumber && this.isCollision(main.asteroidArray[x]))
+            {
+                System.out.println("COLLISION WITH ASTEROID "+main.asteroidArray[x].IdentificationNumber+" WITH ASTEROID "+this.IdentificationNumber);
                 this.asteroidImage.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+                main.asteroidArray[x].asteroidImage.setFill(Color.color(Math.random(), Math.random(), Math.random()));
+                changeInX = -changeInX;
+                changeInY = -changeInY;
             }
         }
     }
 
-    public void setAsteroidPosition(int x, int y)
+    public void keepAsteroidInBounds()
     {
-        asteroidImage.setLayoutX(x);
-        asteroidImage.setLayoutY(y);
+        if (this.asteroidImage.getLayoutX() < 50 || this.asteroidImage.getLayoutX() > 650 || this.asteroidImage.getLayoutY() > 650 || this.asteroidImage.getLayoutY() < 50)
+        {
+            changeInX = -changeInX;
+            changeInY = -changeInY;
+        }
+    }
+
+
+    public void createAsteroidCourse()
+    {
+        changeInX = Math.random();
+        if (rand.nextInt(2) == 0)
+        {
+            changeInX = -changeInX;
+        }
+        changeInY = Math.random();
+        if (rand.nextInt(2) == 0)
+        {
+            changeInY = -changeInY;
+        }
+    }
+
+    public void setAsteroidPosition()
+    {
+        this.asteroidImage.setLayoutX(rand.nextInt(698)+1);
+        this.asteroidImage.setLayoutY(rand.nextInt(698)+1);
     }
 
     public void createAsteroidVectors()
@@ -352,7 +419,6 @@ public class Asteroid
             }
         }
 
-        this.asteroidImage.setFill(Color.RED);
         return true;
     }
 
