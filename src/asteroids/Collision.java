@@ -26,26 +26,26 @@ public class Collision {
             axes[axes.length - 1] = getNormal(new Vector(points2[0].getX() - points2[edgeVectors2.length - 1].getX(), points2[0].getY() - points2[edgeVectors2.length - 1].getY()));
             return isOverlap(edgeVectors, edgeVectors2, axes);
         } else if (this.object1 instanceof Ship && this.object2 instanceof Asteroid) {
-            Point[] asteroidPositionPoints = ((Asteroid) this.object2).getPositionPoints();
-            Point[] decomposedPolygon1PositionPoints = ((Ship) this.object1).getDecomposedPolygonsPositionPoints().get(0);
-            Point[] decomposedPolygon2PositionPoints = ((Ship) this.object1).getDecomposedPolygonsPositionPoints().get(1);
-            Vector[] edgeVectorsA = new Vector[asteroidPositionPoints.length];
-            Vector[] edgeVectorsDP1 = new Vector[decomposedPolygon1PositionPoints.length];
-            Vector[] edgeVectorsDP2 = new Vector[decomposedPolygon2PositionPoints.length];
-            setEdgeVectors(edgeVectorsA, asteroidPositionPoints);
-            setEdgeVectors(edgeVectorsDP1, decomposedPolygon1PositionPoints);
-            setEdgeVectors(edgeVectorsDP2, decomposedPolygon2PositionPoints);
-            Vector[] asteroidAxes = new Vector[edgeVectorsA.length];
-            Vector[] dp1Axes = new Vector[edgeVectorsDP1.length];
-            Vector[] dp2Axes = new Vector[edgeVectorsDP2.length];
-            setAxes(asteroidPositionPoints, asteroidAxes, 0, asteroidPositionPoints.length - 1, 0);
-            setAxes(decomposedPolygon1PositionPoints, dp1Axes, 0, decomposedPolygon1PositionPoints.length - 1, 0);
-            setAxes(decomposedPolygon2PositionPoints, dp2Axes, 0, decomposedPolygon2PositionPoints.length - 1, 0);
-            asteroidAxes[asteroidPositionPoints.length - 1] = getNormal(new Vector(asteroidPositionPoints[0].getX() - asteroidPositionPoints[asteroidPositionPoints.length - 1].getX(), asteroidPositionPoints[0].getY() - asteroidPositionPoints[asteroidPositionPoints.length - 1].getY()));
-            dp1Axes[decomposedPolygon1PositionPoints.length - 1] = getNormal(new Vector(decomposedPolygon1PositionPoints[0].getX() - decomposedPolygon1PositionPoints[decomposedPolygon1PositionPoints.length - 1].getX(), decomposedPolygon1PositionPoints[0].getY() - decomposedPolygon1PositionPoints[decomposedPolygon1PositionPoints.length - 1].getY()));
-            dp2Axes[decomposedPolygon2PositionPoints.length - 1] = getNormal(new Vector(decomposedPolygon2PositionPoints[0].getX() - decomposedPolygon2PositionPoints[decomposedPolygon2PositionPoints.length - 1].getX(), decomposedPolygon2PositionPoints[0].getY() - decomposedPolygon2PositionPoints[decomposedPolygon2PositionPoints.length - 1].getY()));
-            return isOverlap(edgeVectorsDP1, edgeVectorsA, addVectorArrays(dp1Axes, asteroidAxes)) &&
-                    isOverlap(edgeVectorsDP2, edgeVectorsA, addVectorArrays(dp2Axes, asteroidAxes));
+            Point[] points = ((Ship) this.object1).getDecomposedPolygonsPositionPoints().get(1);
+            Point[] points2 = ((Asteroid) this.object2).getPositionPoints();
+            Vector[] edgeVectors = new Vector[points.length];
+            setEdgeVectors(edgeVectors, points);
+            Vector[] edgeVectors2 = new Vector[points2.length];
+            setEdgeVectors(edgeVectors2, points2);
+            Vector[] axes = new Vector[edgeVectors.length + edgeVectors2.length];
+            setAxes(points, axes, 0, points.length - 1, 0);
+            axes[points.length - 1] = getNormal(new Vector(points[0].getX() - points[points.length - 1].getX(), points[0].getY() - points[points.length - 1].getY()));
+            setAxes(points2, axes, points.length, axes.length - 1, edgeVectors.length);
+            axes[axes.length - 1] = getNormal(new Vector(points2[0].getX() - points2[edgeVectors2.length - 1].getX(), points2[0].getY() - points2[edgeVectors2.length - 1].getY()));
+            Point[] points3 = ((Ship) this.object1).getDecomposedPolygonsPositionPoints().get(0);
+            Vector[] edgeVectors3 = new Vector[points3.length];
+            setEdgeVectors(edgeVectors3, points3);
+            Vector[] axes3 = new Vector[edgeVectors3.length + edgeVectors2.length];
+            setAxes(points3, axes3, 0, points3.length - 1, 0);
+            axes3[points3.length - 1] = getNormal(new Vector(points3[0].getX() - points3[points3.length - 1].getX(), points3[0].getY() - points3[points3.length - 1].getY()));
+            setAxes(points2, axes3, points3.length, axes3.length - 1, edgeVectors3.length);
+            axes3[axes3.length - 1] = getNormal(new Vector(points2[0].getX() - points2[edgeVectors2.length - 1].getX(), points2[0].getY() - points2[edgeVectors2.length - 1].getY()));
+            return isOverlap(edgeVectors, edgeVectors2, axes) || isOverlap(edgeVectors3, edgeVectors2, axes3);
         } else if (this.object1 instanceof Bullet && this.object2 instanceof Asteroid) {
             Point bulletPositionPoint = ((Bullet) this.object1).getPositionPoint();
             Point[] asteroidPositionPoints = ((Asteroid) this.object2).getPositionPoints();

@@ -80,9 +80,9 @@ public class Main extends Application {
     private final AnimationTimer collisionDetection = new AnimationTimer() {
         @Override
         public void handle(long l) {
-//            detectShipCollision();
+            detectShipCollision();
 //            detectBulletCollision();
-            detectAsteroidCollision();
+//            detectAsteroidCollision();
         }
     };
 }

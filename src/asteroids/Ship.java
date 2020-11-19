@@ -11,7 +11,7 @@ import javafx.scene.shape.Polygon;
 import java.util.ArrayList;
 
 class Ship extends AsteroidsObject {
-    private Polygon polygon;
+
     private int rotationDirection;
     private double vx;
     private double vy;
@@ -20,8 +20,6 @@ class Ship extends AsteroidsObject {
     private double rotation = 90;
     private double directionX = Math.cos(Math.toRadians(rotation));
     private double directionY = Math.sin(Math.toRadians(rotation));
-    private Point[] positionPoints;
-    private Point[] polygonPoints;
     private ArrayList<Point[]> decomposedPolygonsPositionPoints;
 
     Ship() {
@@ -40,9 +38,9 @@ class Ship extends AsteroidsObject {
                 }
                 polygon.setLayoutX(polygon.getLayoutX() + vx);
                 polygon.setLayoutY(polygon.getLayoutY() - vy);
-                wrap(polygon);
-                setPositionPoints(polygonPoints);
-                updateDecomposedPolygonsPositionPoints();
+//                wrap(polygon);
+                setPositionPoints();
+//                updateDecomposedPolygonsPositionPoints();
             }
         };
         AnimationTimer rotate = new AnimationTimer() {
@@ -65,15 +63,19 @@ class Ship extends AsteroidsObject {
         polygonPoints = new Point[points.length/2];
         setPolygonPoints();
         positionPoints = new Point[points.length/2];
-        setPositionPoints(polygonPoints);
-        decomposedPolygonsPositionPoints = new ArrayList<>();
-        decomposedPolygonsPositionPoints.add(new Point[] {positionPoints[0], positionPoints[1], positionPoints[2]});
-        decomposedPolygonsPositionPoints.add(new Point[] {positionPoints[0], positionPoints[2], positionPoints[3]});
+        setPositionPoints();
+        setDecomposedPolygonsPositionPoints();
         polygon.setFill(Color.TRANSPARENT);
         polygon.setStroke(Color.BLACK);
     }
 
-    public void updateDecomposedPolygonsPositionPoints() {
+    private void setDecomposedPolygonsPositionPoints() {
+        decomposedPolygonsPositionPoints = new ArrayList<>();
+        decomposedPolygonsPositionPoints.add(new Point[] {positionPoints[0], positionPoints[1], positionPoints[2]});
+        decomposedPolygonsPositionPoints.add(new Point[] {positionPoints[0], positionPoints[2], positionPoints[3]});
+    }
+
+    private void updateDecomposedPolygonsPositionPoints() {
         Point[] dp1PositionPoints = decomposedPolygonsPositionPoints.get(0);
         Point[] dp2PositionPoints = decomposedPolygonsPositionPoints.get(1);
         dp1PositionPoints[0].updateXY(positionPoints[0].getX(), positionPoints[0].getY());
@@ -87,19 +89,6 @@ class Ship extends AsteroidsObject {
     public ArrayList<Point[]> getDecomposedPolygonsPositionPoints() { return decomposedPolygonsPositionPoints; }
 
     Polygon getImage() { return polygon; }
-
-    private void setPolygonPoints() {
-        Double[] points = polygon.getPoints().toArray(new Double[0]);
-        int j = 0;
-        for (int i = 0; i < points.length - 1; i+=2) {
-            polygonPoints[j] = new Point(points[i], points[i + 1]);
-            j += 1;
-        }
-    }
-
-    private void setPositionPoints(Point[] polygonPoints) {
-        for (int i = 0; i < polygonPoints.length; i++) { positionPoints[i] = new Point((polygonPoints[i].getX()) + polygon.getLayoutX(), (polygonPoints[i].getY()) + polygon.getLayoutY()); }
-    }
 
     private void setRotation() {
         rotation += rotationFactor*-rotationDirection;
