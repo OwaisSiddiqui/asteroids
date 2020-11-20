@@ -26,5 +26,5 @@ public class AsteroidsObject {
         }
     }
 
-    protected void setPositionPoints() { for (int i = 0; i < polygonPoints.length; i++) { positionPoints[i] = new Point(polygonPoints[i].getX() + polygon.getLayoutX(), polygonPoints[i].getY() + polygon.getLayoutY()); } }
+    protected void setPositionPoints(double rotation) { for (int i = 0; i < polygonPoints.length; i++) { positionPoints[i] = new Point(polygonPoints[i].getX()*Math.cos(Math.toRadians(rotation)) - polygonPoints[i].getY()*Math.sin(Math.toRadians(rotation)) + polygon.getLayoutX(), polygonPoints[i].getX()*Math.sin(Math.toRadians(rotation)) + polygonPoints[i].getY()*Math.cos(Math.toRadians(rotation)) + polygon.getLayoutY()); } }
 }

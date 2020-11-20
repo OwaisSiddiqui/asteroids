@@ -10,12 +10,11 @@ import javafx.animation.AnimationTimer;
 class Bullet extends AsteroidsObject {
     private final Circle circle;
     private final Ship ship;
-    private final double acceleration = 7;
     private double shipLastDirectionX;
     private double shipLastDirectionY;
     private double lastX = 0;
     private double lastY = 0;
-    private boolean isBulletRunning = false;
+    private boolean isRunning = false;
     private int numberOfTriggers = 0;
     private Point positionPoint;
     private Double radius;
@@ -25,21 +24,7 @@ class Bullet extends AsteroidsObject {
         circle.setFill(Color.TRANSPARENT);
         this.ship = ship;
         createBullet();
-        AnimationTimer moveBulletAnimation = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                double maxBulletDistance = 250;
-                if (isBulletRunning && getDistance() < maxBulletDistance) {
-                    numberOfTriggers = 1;
-                    double finalX = circle.getLayoutX() + acceleration * shipLastDirectionX;
-                    double finalY = circle.getLayoutY() - acceleration * shipLastDirectionY;
-                    circle.setLayoutX(finalX);
-                    circle.setLayoutY(finalY);
-                    positionPoint = new Point(finalX, finalY);
-                } else { resetBullet(); }
-            }
-        };
-        moveBulletAnimation.start();
+        move.start();
     }
 
     private void createBullet() {
@@ -52,22 +37,38 @@ class Bullet extends AsteroidsObject {
         this.positionPoint = new Point(initialX, initialY);
     }
 
-    private void resetBullet() {
+    private void reset() {
         circle.setLayoutX(ship.getImage().getLayoutX());
         circle.setLayoutY(ship.getImage().getLayoutY());
         circle.setFill(Color.TRANSPARENT);
-        isBulletRunning = false;
+        isRunning = false;
         numberOfTriggers = 0;
     }
 
-    private void startBullet() {
+    private void start() {
         shipLastDirectionX = ship.getDirectionX();
         shipLastDirectionY = ship.getDirectionY();
         lastX = circle.getLayoutX();
         lastY = circle.getLayoutY();
         circle.setFill(Color.BLACK);
-        isBulletRunning = true;
+        isRunning = true;
     }
+
+    final AnimationTimer move = new AnimationTimer() {
+        @Override
+        public void handle(long l) {
+            double maxBulletDistance = 250;
+            if (isRunning && getDistance() < maxBulletDistance) {
+                numberOfTriggers = 1;
+                double acceleration = 7;
+                double finalX = circle.getLayoutX() + acceleration * shipLastDirectionX;
+                double finalY = circle.getLayoutY() - acceleration * shipLastDirectionY;
+                circle.setLayoutX(finalX);
+                circle.setLayoutY(finalY);
+                positionPoint = new Point(finalX, finalY);
+            } else { reset(); }
+        }
+    };
 
     private double getDistance() { return Math.sqrt(Math.pow(circle.getLayoutX() - lastX, 2) + Math.pow(circle.getLayoutY() - lastY, 2)); }
 
@@ -77,5 +78,7 @@ class Bullet extends AsteroidsObject {
 
     Double getRadius() { return radius; }
 
-    EventHandler<KeyEvent> moveBullet() { return keyEvent -> { if (keyEvent.getCode() == KeyCode.SPACE && numberOfTriggers == 0) { startBullet(); } }; }
+    boolean isRunning() { return isRunning; }
+
+    EventHandler<KeyEvent> moveBullet() { return keyEvent -> { if (keyEvent.getCode() == KeyCode.SPACE && numberOfTriggers == 0) { start(); } }; }
 }

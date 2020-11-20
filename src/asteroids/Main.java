@@ -39,10 +39,6 @@ public class Main extends Application {
         launch(args);
     }
 
-    private void resetRound() {
-        ship.reset();
-    }
-
     private void detectShipCollision() {
         for (Asteroid asteroid: asteroids) {
             Collision collision = new Collision(ship, asteroid);
@@ -56,22 +52,9 @@ public class Main extends Application {
         for (Bullet bullet: bullets) {
             for (Asteroid asteroid: asteroids) {
                 Collision collision = new Collision(bullet, asteroid);
-                if (collision.isCollision()) {
-                    asteroid.getImage().setFill(Color.RED);
-                }
-            }
-        }
-    }
-
-    private void detectAsteroidCollision() {
-        for (Asteroid asteroid1: asteroids) {
-            for (Asteroid asteroid2: asteroids) {
-                if (asteroid1 != asteroid2) {
-                    Collision collision = new Collision(asteroid1, asteroid2);
-                    if (collision.isCollision()) {
-                        asteroid1.move.stop();
-                        asteroid2.move.stop();
-                    }
+                if (bullet.isRunning() && collision.isCollision()) {
+                    asteroid.move.stop();
+                    bullet.move.stop();
                 }
             }
         }
@@ -80,9 +63,8 @@ public class Main extends Application {
     private final AnimationTimer collisionDetection = new AnimationTimer() {
         @Override
         public void handle(long l) {
-            detectShipCollision();
-//            detectBulletCollision();
-//            detectAsteroidCollision();
+//            detectShipCollision();
+            detectBulletCollision();
         }
     };
 }

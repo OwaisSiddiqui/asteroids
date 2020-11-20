@@ -25,7 +25,7 @@ class Asteroid extends AsteroidsObject {
         polygon.setStroke(Color.BLACK);
         createCourse();
         positionPoints = new Point[polygonPoints.length];
-        setPositionPoints();
+        setPositionPoints(0);
         move.start();
     }
 
@@ -49,7 +49,7 @@ class Asteroid extends AsteroidsObject {
             polygon.setLayoutX(polygon.getLayoutX()+dx);
             polygon.setLayoutY(polygon.getLayoutY()+dy);
             wrap(polygon);
-            setPositionPoints();
+            setPositionPoints(0);
         }
     };
 

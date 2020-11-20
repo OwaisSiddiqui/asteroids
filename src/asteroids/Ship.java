@@ -38,16 +38,15 @@ class Ship extends AsteroidsObject {
                 }
                 polygon.setLayoutX(polygon.getLayoutX() + vx);
                 polygon.setLayoutY(polygon.getLayoutY() - vy);
-//                wrap(polygon);
-                setPositionPoints();
-//                updateDecomposedPolygonsPositionPoints();
+                wrap(polygon);
+                setPositionPoints(-rotation);
+                setDecomposedPolygonsPositionPoints();
             }
         };
         AnimationTimer rotate = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                polygon.setRotate(polygon.getRotate() + rotationFactor * rotationDirection);
-                if (rotationFactor != 0) { setRotation(); }
+                setRotation();
             }
         };
         move.start();
@@ -58,12 +57,12 @@ class Ship extends AsteroidsObject {
         polygon = new Polygon();
         polygon.setLayoutX(350);
         polygon.setLayoutY(350);
-        Double[] points = new Double[]{0.0, 5.0, 12.5, 15.0, 0.0, -15.0, -12.5, 15.0};
+        Double[] points = new Double[]{15.0, 0.0, -15.0, -12.5, -5.0, 0.0, -15.0, 12.5};
         polygon.getPoints().addAll(points);
         polygonPoints = new Point[points.length/2];
         setPolygonPoints();
         positionPoints = new Point[points.length/2];
-        setPositionPoints();
+        setPositionPoints(0);
         setDecomposedPolygonsPositionPoints();
         polygon.setFill(Color.TRANSPARENT);
         polygon.setStroke(Color.BLACK);
@@ -75,41 +74,22 @@ class Ship extends AsteroidsObject {
         decomposedPolygonsPositionPoints.add(new Point[] {positionPoints[0], positionPoints[2], positionPoints[3]});
     }
 
-    private void updateDecomposedPolygonsPositionPoints() {
-        Point[] dp1PositionPoints = decomposedPolygonsPositionPoints.get(0);
-        Point[] dp2PositionPoints = decomposedPolygonsPositionPoints.get(1);
-        dp1PositionPoints[0].updateXY(positionPoints[0].getX(), positionPoints[0].getY());
-        dp1PositionPoints[1].updateXY(positionPoints[1].getX(), positionPoints[1].getY());
-        dp1PositionPoints[2].updateXY(positionPoints[2].getX(), positionPoints[2].getY());
-        dp2PositionPoints[0].updateXY(positionPoints[0].getX(), positionPoints[0].getY());
-        dp2PositionPoints[1].updateXY(positionPoints[2].getX(), positionPoints[2].getY());
-        dp2PositionPoints[2].updateXY(positionPoints[3].getX(), positionPoints[3].getY());
-    }
-
     public ArrayList<Point[]> getDecomposedPolygonsPositionPoints() { return decomposedPolygonsPositionPoints; }
 
     Polygon getImage() { return polygon; }
 
-    private void setRotation() {
-        rotation += rotationFactor*-rotationDirection;
-        directionX = Math.cos(Math.toRadians(rotation));
-        directionY = Math.sin(Math.toRadians(rotation));
-    }
-
-    void reset() {
-        polygon.setLayoutX(350);
-        polygon.setLayoutY(350);
-        polygon.setRotate(90);
-        vx = 0;
-        vy = 0;
-        acceleration = 0;
-        directionX = 0;
-        directionY = 1;
-    }
-
     public double getDirectionX() { return directionX; }
 
     public double getDirectionY() { return directionY; }
+
+    private void setRotation() {
+        double newRotation = rotation + rotationFactor * -rotationDirection;
+        rotation = newRotation % 360;
+        if (rotation < 0) rotation += 360;
+        polygon.setRotate(-rotation);
+        directionX = Math.cos(Math.toRadians(rotation));
+        directionY = Math.sin(Math.toRadians(rotation));
+    }
 
     EventHandler<KeyEvent> rotate(EventType<KeyEvent> keyEventPR) {
         if (keyEventPR == KeyEvent.KEY_PRESSED) {
