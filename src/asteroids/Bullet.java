@@ -15,14 +15,32 @@ class Bullet extends AsteroidsObject {
     private double lastX = 0;
     private double lastY = 0;
     private boolean isRunning = false;
-    private int numberOfTriggers = 0;
+    int numberOfTriggers = 0;
     private Point positionPoint;
     private Double radius;
+    final AnimationTimer move = new AnimationTimer() {
+        @Override
+        public void handle(long l) {
+            double maxBulletDistance = 250;
+            if (isRunning && getDistance() < maxBulletDistance) {
+                numberOfTriggers = 1;
+                double acceleration = 7;
+                double finalX = circle.getLayoutX() + acceleration * shipLastDirectionX;
+                double finalY = circle.getLayoutY() - acceleration * shipLastDirectionY;
+                circle.setLayoutX(finalX);
+                circle.setLayoutY(finalY);
+                positionPoint = new Point(finalX, finalY);
+            } else { reset(); }
+        }
+    };
+    private boolean readyToFire = false;
+    int id;
 
-    Bullet(Ship ship) {
+    Bullet(Ship ship, int id) {
         circle = new Circle();
         circle.setFill(Color.TRANSPARENT);
         this.ship = ship;
+        this.id = id;
         createBullet();
         move.start();
     }
@@ -37,7 +55,7 @@ class Bullet extends AsteroidsObject {
         this.positionPoint = new Point(initialX, initialY);
     }
 
-    private void reset() {
+    void reset() {
         circle.setLayoutX(ship.getImage().getLayoutX());
         circle.setLayoutY(ship.getImage().getLayoutY());
         circle.setFill(Color.TRANSPARENT);
@@ -54,22 +72,6 @@ class Bullet extends AsteroidsObject {
         isRunning = true;
     }
 
-    final AnimationTimer move = new AnimationTimer() {
-        @Override
-        public void handle(long l) {
-            double maxBulletDistance = 250;
-            if (isRunning && getDistance() < maxBulletDistance) {
-                numberOfTriggers = 1;
-                double acceleration = 7;
-                double finalX = circle.getLayoutX() + acceleration * shipLastDirectionX;
-                double finalY = circle.getLayoutY() - acceleration * shipLastDirectionY;
-                circle.setLayoutX(finalX);
-                circle.setLayoutY(finalY);
-                positionPoint = new Point(finalX, finalY);
-            } else { reset(); }
-        }
-    };
-
     private double getDistance() { return Math.sqrt(Math.pow(circle.getLayoutX() - lastX, 2) + Math.pow(circle.getLayoutY() - lastY, 2)); }
 
     Circle getImage() { return circle; }
@@ -80,5 +82,9 @@ class Bullet extends AsteroidsObject {
 
     boolean isRunning() { return isRunning; }
 
-    EventHandler<KeyEvent> moveBullet() { return keyEvent -> { if (keyEvent.getCode() == KeyCode.SPACE && numberOfTriggers == 0) { start(); } }; }
+    void setReadyToFire(boolean status) { readyToFire = status; }
+
+    boolean isReadyToFire() { return readyToFire; }
+
+    EventHandler<KeyEvent> move() { return keyEvent -> { if (keyEvent.getCode() == KeyCode.SPACE && numberOfTriggers == 0 && readyToFire) { start(); } }; }
 }

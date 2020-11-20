@@ -68,6 +68,17 @@ class Ship extends AsteroidsObject {
         polygon.setStroke(Color.BLACK);
     }
 
+    void reset() {
+        vx = 0;
+        vy = 0;
+        acceleration = 0;
+        rotation = 90;
+        directionX = 0;
+        directionY = 1;
+        polygon.setLayoutX(350);
+        polygon.setLayoutY(350);
+    }
+
     private void setDecomposedPolygonsPositionPoints() {
         decomposedPolygonsPositionPoints = new ArrayList<>();
         decomposedPolygonsPositionPoints.add(new Point[] {positionPoints[0], positionPoints[1], positionPoints[2]});
