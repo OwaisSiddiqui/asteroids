@@ -2,8 +2,8 @@ package src.asteroids;
 
 class Point {
 
-    private final double x;
-    private final double y;
+    private double x;
+    private double y;
 
     Point(double x, double y) {
         this.x = x;
@@ -14,4 +14,7 @@ class Point {
 
     double getY() { return this.y; }
 
+    void setX(double x) { this.x = x; }
+
+    void setY(double y) { this.y = y; }
 }

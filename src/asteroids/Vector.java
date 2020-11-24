@@ -16,9 +16,8 @@ class Vector {
 
     static double projectVector(Vector vector1, Vector vector2) { return getDotProduct(vector1, getUnitVector(vector2)); }
 
-    static Vector getNormal(Vector vector) {
-        return new Vector(vector.y, -vector.x);
-    }
+    @SuppressWarnings("SuspiciousNameCombination")
+    static Vector getNormal(Vector vector) { return new Vector(vector.y, -vector.x); }
 
     static Vector getUnitVector(Vector vector) {
         if (vector.magnitude != 0) { return scaleVector(vector, 1 / vector.magnitude); }

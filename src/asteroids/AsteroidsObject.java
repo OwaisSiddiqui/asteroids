@@ -7,14 +7,26 @@ public class AsteroidsObject {
 
     protected Polygon polygon;
     protected Point[] polygonPoints;
-    protected Point[] positionPoints;
+    Point[] positionPoints;
 
     protected void wrap(Polygon polygon) {
         Bounds shipBoundsInParent = polygon.getBoundsInParent();
-        if (shipBoundsInParent.getMinX() > 700) { polygon.relocate(0 - shipBoundsInParent.getWidth(), polygon.getLayoutY()); }
-        else if (shipBoundsInParent.getMinY() > 700) { polygon.relocate(polygon.getLayoutX(), 0 - shipBoundsInParent.getHeight()); }
-        else if (shipBoundsInParent.getMaxX() < 0) { polygon.relocate(700, polygon.getLayoutY()); }
-        else if (shipBoundsInParent.getMaxY() < 0) { polygon.relocate(polygon.getLayoutX(), 700); }
+        if (shipBoundsInParent.getMinX() > 700) {
+            polygon.setLayoutX(0 - Math.abs(shipBoundsInParent.getMaxX() - polygon.getLayoutX()));
+            polygon.setLayoutY(polygon.getLayoutY());
+        }
+        else if (shipBoundsInParent.getMinY() > 700) {
+            polygon.setLayoutX(polygon.getLayoutX());
+            polygon.setLayoutY(0 - Math.abs(shipBoundsInParent.getMaxY() - polygon.getLayoutY()));
+        }
+        else if (shipBoundsInParent.getMaxX() < 0) {
+            polygon.setLayoutX(700 + Math.abs(shipBoundsInParent.getMinX() - polygon.getLayoutX()));
+            polygon.setLayoutY(polygon.getLayoutY());
+        }
+        else if (shipBoundsInParent.getMaxY() < 0) {
+            polygon.setLayoutX(polygon.getLayoutX());
+            polygon.setLayoutY(700 + Math.abs(shipBoundsInParent.getMinY() - polygon.getLayoutY()));
+        }
     }
 
     protected void setPolygonPoints() {

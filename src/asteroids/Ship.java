@@ -13,7 +13,7 @@ import java.util.ArrayList;
 class Ship extends AsteroidsObject {
 
     private int rotationDirection;
-    private double vx;
+    double vx;
     private double vy;
     private double rotationFactor = 0;
     private double acceleration = 0;
@@ -21,33 +21,34 @@ class Ship extends AsteroidsObject {
     private double directionX = Math.cos(Math.toRadians(rotation));
     private double directionY = Math.sin(Math.toRadians(rotation));
     private ArrayList<Point[]> decomposedPolygonsPositionPoints;
-
-    Ship() {
-        createShip();
-        AnimationTimer move = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                if (acceleration > 0) {
-                    vx += directionX * acceleration * 0.004;
-                    vy += directionY * acceleration * 0.004;
-                } else if (vx != 0 || vy != 0) {
-                    double speed = Math.hypot(vx, vy);
-                    double correctionFactor = Math.max((speed - 0.03) / speed, 0);
-                    vx *= correctionFactor;
-                    vy *= correctionFactor;
-                }
-                polygon.setLayoutX(polygon.getLayoutX() + vx);
-                polygon.setLayoutY(polygon.getLayoutY() - vy);
-                wrap(polygon);
-                setPositionPoints(-rotation);
-                setDecomposedPolygonsPositionPoints();
+    private final Launcher launcher;
+    AnimationTimer move = new AnimationTimer() {
+        @Override
+        public void handle(long l) {
+            double speed = Math.hypot(vx, vy);
+            double maxSpeed = 10;
+            if (acceleration > 0 && speed <= maxSpeed) {
+                vx += directionX * acceleration * 0.004;
+                vy += directionY * acceleration * 0.004;
+            } else if (vx != 0 || vy != 0) {
+                double correctionFactor = Math.max((speed - 0.03) / speed, 0);
+                vx *= correctionFactor;
+                vy *= correctionFactor;
             }
-        };
+            polygon.setLayoutX(polygon.getLayoutX() + vx);
+            polygon.setLayoutY(polygon.getLayoutY() - vy);
+            setPositionPoints(-rotation);
+            setDecomposedPolygonsPositionPoints();
+            if (speed > 0) { wrap(polygon); }
+        }
+    };
+
+    Ship(int numberOfBullets) {
+        createShip();
+        launcher = new Launcher(this, createBullets(numberOfBullets));
         AnimationTimer rotate = new AnimationTimer() {
             @Override
-            public void handle(long l) {
-                setRotation();
-            }
+            public void handle(long l) { setRotation(); }
         };
         move.start();
         rotate.start();
@@ -55,10 +56,10 @@ class Ship extends AsteroidsObject {
 
     private void createShip() {
         polygon = new Polygon();
-        polygon.setLayoutX(350);
-        polygon.setLayoutY(350);
         Double[] points = new Double[]{15.0, 0.0, -15.0, -12.5, -5.0, 0.0, -15.0, 12.5};
         polygon.getPoints().addAll(points);
+        polygon.setLayoutX(350);
+        polygon.setLayoutY(350);
         polygonPoints = new Point[points.length/2];
         setPolygonPoints();
         positionPoints = new Point[points.length/2];
@@ -66,6 +67,12 @@ class Ship extends AsteroidsObject {
         setDecomposedPolygonsPositionPoints();
         polygon.setFill(Color.TRANSPARENT);
         polygon.setStroke(Color.BLACK);
+    }
+
+    private ArrayList<Bullet> createBullets(int numberOfBullets) {
+        ArrayList<Bullet> bullets = new ArrayList<>();
+        for (int i = 0; i < numberOfBullets; i++) { bullets.add(new Bullet()); }
+        return bullets;
     }
 
     void reset() {
@@ -89,6 +96,8 @@ class Ship extends AsteroidsObject {
 
     Polygon getImage() { return polygon; }
 
+    public Launcher getLauncher() { return launcher; }
+
     public double getDirectionX() { return directionX; }
 
     public double getDirectionY() { return directionY; }
@@ -97,9 +106,9 @@ class Ship extends AsteroidsObject {
         double newRotation = rotation + rotationFactor * -rotationDirection;
         rotation = newRotation % 360;
         if (rotation < 0) rotation += 360;
-        polygon.setRotate(-rotation);
         directionX = Math.cos(Math.toRadians(rotation));
         directionY = Math.sin(Math.toRadians(rotation));
+        polygon.setRotate(-rotation);
     }
 
     EventHandler<KeyEvent> rotate(EventType<KeyEvent> keyEventPR) {
@@ -113,7 +122,7 @@ class Ship extends AsteroidsObject {
                     rotationDirection = -1;
                 }
             };
-        } else { return keyEvent -> { if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.LEFT) { rotationFactor = 0; } }; }
+        } else if (keyEventPR == KeyEvent.KEY_RELEASED) { return keyEvent -> { if (keyEvent.getCode() == KeyCode.RIGHT || keyEvent.getCode() == KeyCode.LEFT) { rotationFactor = 0; } }; } else { return keyEvent -> {}; }
     }
 
     EventHandler<KeyEvent> move(EventType<KeyEvent> keyEventPR) { if (keyEventPR == KeyEvent.KEY_PRESSED) { return keyEvent -> { if (keyEvent.getCode() == KeyCode.UP) { acceleration = 17; } }; } else { return keyEvent -> { if (keyEvent.getCode() == KeyCode.UP) { acceleration = 0; } }; } }

@@ -11,9 +11,7 @@ class Asteroid extends AsteroidsObject {
     private double dx;
     private double dy;
 
-    Asteroid() {
-        createAsteroid();
-    }
+    Asteroid() { createAsteroid(); }
 
     private void createAsteroid() {
         polygon = new Polygon();
@@ -43,7 +41,7 @@ class Asteroid extends AsteroidsObject {
 
     Point[] getPositionPoints() { return positionPoints; }
 
-    public final AnimationTimer move = new AnimationTimer() {
+    private final AnimationTimer move = new AnimationTimer() {
         @Override
         public void handle(long l) {
             polygon.setLayoutX(polygon.getLayoutX()+dx);
