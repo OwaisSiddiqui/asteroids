@@ -12,20 +12,7 @@ public class Collision {
     }
 
     public boolean isCollision() {
-        if (this.object1 instanceof Asteroid && this.object2 instanceof Asteroid) {
-            Point[] points = ((Asteroid) this.object1).getPositionPoints();
-            Point[] points2 = ((Asteroid) this.object2).getPositionPoints();
-            Vector[] edgeVectors = new Vector[points.length];
-            setEdgeVectors(edgeVectors, points);
-            Vector[] edgeVectors2 = new Vector[points2.length];
-            setEdgeVectors(edgeVectors2, points2);
-            Vector[] axes = new Vector[edgeVectors.length + edgeVectors2.length];
-            setAxes(points, axes, 0, points.length - 1, 0);
-            axes[points.length - 1] = getNormal(new Vector(points[0].getX() - points[points.length - 1].getX(), points[0].getY() - points[points.length - 1].getY()));
-            setAxes(points2, axes, points.length, axes.length - 1, edgeVectors.length);
-            axes[axes.length - 1] = getNormal(new Vector(points2[0].getX() - points2[edgeVectors2.length - 1].getX(), points2[0].getY() - points2[edgeVectors2.length - 1].getY()));
-            return isOverlap(edgeVectors, edgeVectors2, axes);
-        } else if (this.object1 instanceof Ship && this.object2 instanceof Asteroid) {
+        if (this.object1 instanceof Ship && this.object2 instanceof Asteroid) {
             Point[] points = ((Ship) this.object1).getDecomposedPolygonsPositionPoints().get(1);
             Point[] points2 = ((Asteroid) this.object2).getPositionPoints();
             Vector[] edgeVectors = new Vector[points.length];

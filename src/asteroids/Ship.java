@@ -22,6 +22,8 @@ class Ship extends AsteroidsObject {
     private double directionY = Math.sin(Math.toRadians(rotation));
     private ArrayList<Point[]> decomposedPolygonsPositionPoints;
     private final Launcher launcher;
+    boolean isResetting;
+    private long lastUpdate;
     AnimationTimer move = new AnimationTimer() {
         @Override
         public void handle(long l) {
@@ -51,6 +53,18 @@ class Ship extends AsteroidsObject {
             public void handle(long l) { setRotation(); }
         };
         move.start();
+        AnimationTimer setIsResetting = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                long resetDelay = 3000;
+                if (isResetting) {
+                    if (System.currentTimeMillis() - lastUpdate >= resetDelay) {
+                        isResetting = false;
+                    }
+                }
+            }
+        };
+        setIsResetting.start();
         rotate.start();
     }
 
@@ -76,6 +90,7 @@ class Ship extends AsteroidsObject {
     }
 
     void reset() {
+        isResetting = true;
         vx = 0;
         vy = 0;
         acceleration = 0;
@@ -84,6 +99,7 @@ class Ship extends AsteroidsObject {
         directionY = 1;
         polygon.setLayoutX(350);
         polygon.setLayoutY(350);
+        lastUpdate = System.currentTimeMillis();
     }
 
     private void setDecomposedPolygonsPositionPoints() {
