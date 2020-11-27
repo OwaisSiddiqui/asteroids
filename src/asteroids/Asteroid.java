@@ -16,17 +16,17 @@ class Asteroid extends AsteroidsObject {
     Asteroid(String size, double x, double y) {
         this.size = size;
         if (size.equals("small")) { createSmallAsteroid(x, y); } else if (size.equals("medium")) { createMediumAsteroid(x, y); } else { createBigAsteroid(x, y); }
-        AnimationTimer move = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                polygon.setLayoutX(polygon.getLayoutX() + dx);
-                polygon.setLayoutY(polygon.getLayoutY() + dy);
-                wrap(polygon);
-                setPositionPoints(0);
-            }
-        };
-        move.start();
     }
+
+    public AnimationTimer move = new AnimationTimer() {
+        @Override
+        public void handle(long l) {
+        polygon.setLayoutX(polygon.getLayoutX() + dx);
+        polygon.setLayoutY(polygon.getLayoutY() + dy);
+        wrap(polygon);
+        setPositionPoints(0);
+        }
+    };
 
     private void createBigAsteroid(double x, double y) {
         polygon = new Polygon();
