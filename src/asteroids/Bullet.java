@@ -57,7 +57,7 @@ class Bullet {
         lastDirectionY = directionY;
         circle.setLayoutX(startingX);
         circle.setLayoutY(startingY);
-        circle.setFill(Color.BLACK);
+        circle.setFill(Color.CADETBLUE);
         isRunning = true;
     }
 

@@ -80,7 +80,7 @@ class Ship extends AsteroidsObject {
         setPositionPoints(0);
         setDecomposedPolygonsPositionPoints();
         polygon.setFill(Color.TRANSPARENT);
-        polygon.setStroke(Color.BLACK);
+        polygon.setStroke(Color.WHITE);
     }
 
     private ArrayList<Bullet> createBullets(int numberOfBullets) {

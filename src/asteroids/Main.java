@@ -4,21 +4,24 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import src.asteroids.game.GameController;
+import src.asteroids.gameOver.GameOverController;
+import src.asteroids.menu.MenuController;
+import src.asteroids.stats.StatsController;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class Main extends Application {
@@ -29,17 +32,46 @@ public class Main extends Application {
     private final ArrayList<Asteroid> asteroids = new ArrayList<>();
     private int lives = 3;
     private int livesPoints = 0;
-    private final ArrayList<Polygon> lifeIcons = new ArrayList<>();
     private int numberOfAsteroids = 5;
     private int points = 0;
-    private final Text pointsText = new Text();
+    private int numberOfAsteroidsDestroyed = 0;
+    private int level = 1;
+    private int totalCollisions = 0;
     Parent menuScreen;
-    AsteroidsScreen gameScreen = new AsteroidsScreen("Pane");
-    AsteroidsScreen gameOverScreen = new AsteroidsScreen("StackPane");
+    Parent gameScreen;
+    Parent gameOverScreen;
+    Parent statsScreen;
+    GameController gameController;
+    GameOverController gameOverController;
+    StatsController statsController;
 
     @Override
-    public void start(Stage stage) throws Exception {
-        menuScreen = FXMLLoader.load(getClass().getResource("menu/menu.fxml"));
+    public void start(Stage stage) throws IOException {
+        initializeGameData();
+        FXMLLoader menuLoader = new FXMLLoader(getClass().getResource("menu/menu.fxml"));
+        menuScreen = menuLoader.load();
+        MenuController menuController = menuLoader.getController();
+        menuController.getPlayButton().setOnAction(actionEvent -> startGame());
+        menuController.getStatsButton().setOnAction(actionEvent -> {
+            try {
+                switchToStatsScreen();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+        setBackgroundMenuScreen(menuController.getBackgroundScreen());
+        FXMLLoader gameLoader = new FXMLLoader(getClass().getResource("game/game.fxml"));
+        gameScreen = gameLoader.load();
+        gameController = gameLoader.getController();
+        FXMLLoader gameOverLoader = new FXMLLoader(getClass().getResource("gameOver/gameOver.fxml"));
+        gameOverScreen = gameOverLoader.load();
+        gameOverController = gameOverLoader.getController();
+        gameOverController.getReturnMenuButton().setOnAction(actionEvent -> backToMenuScreen());
+        gameOverController.getPlayAgainButton().setOnAction(actionEvent -> startGame());
+        FXMLLoader statsLoader = new FXMLLoader(getClass().getResource("stats/stats.fxml"));
+        statsScreen = statsLoader.load();
+        statsController = statsLoader.getController();
+        statsController.getBackToMenuButton().setOnAction(actionEvent -> backToMenuScreen());
         group.getChildren().add(menuScreen);
         scene.addEventHandler(KeyEvent.KEY_PRESSED, ship.rotate(KeyEvent.KEY_PRESSED));
         scene.addEventHandler(KeyEvent.KEY_RELEASED, ship.rotate(KeyEvent.KEY_RELEASED));
@@ -53,112 +85,52 @@ public class Main extends Application {
         stage.show();
     }
 
+    private void switchToStatsScreen() throws IOException, ClassNotFoundException {
+        removeAllScreens();
+        HashMap<String, String> data = getDataFromFile();
+        statsController.getHighScoreText().setText(data.get("High Score"));
+        statsController.getHighLevelText().setText(data.get("Highest Level"));
+        statsController.getTotalCollisionsText().setText(data.get("Total Collisions"));
+        statsController.getTotalAsteroidsText().setText(data.get("Total Asteroids Destroyed"));
+        statsController.getTotalPointsText().setText(data.get("Total Points"));
+        statsController.getTotalGamesPlayedText().setText(data.get("Total Games Played"));
+        addScreen(statsScreen);
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
 
-    private void exitGame() {
-        System.exit(0);
+    private void removeScreen(Node e) {
+        group.getChildren().remove(e);
     }
 
-    private void createGameOverScreen() {
-        gameOverScreen.getScreen().getChildren().clear();
-        VBox middle = new VBox();
-        VBox titleBox = new VBox();
-        Text finalPointsText = new Text();
-        finalPointsText.setFont(new Font(30));
-        finalPointsText.setText("Points: " + points);
-        titleBox.setAlignment(Pos.TOP_CENTER);
-        titleBox.setPadding(new Insets(100, 0, 0, 0));
-        VBox buttons = new VBox();
-        buttons.setSpacing(20);
-        buttons.setAlignment(Pos.CENTER);
-        Text title = new Text("Game Over");
-        title.setFont(new Font("Helvetica Neue", 70));
-        Button playButton = new Button("Play Again");
-        playButton.setFocusTraversable(false);
-        playButton.setFont(new Font("Helvetica Neue", 30));
-        playButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-style: solid; -fx-border-radius: 4px");
-        playButton.setOnAction(actionEvent -> startGame());
-        Button exitButton = new Button("Back to Menu");
-        exitButton.setFocusTraversable(false);
-        exitButton.setFont(new Font("Helvetica Neue", 30));
-        exitButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-style: solid; -fx-border-radius: 4px");
-        exitButton.setOnAction(actionEvent -> backToMenuScreen());
-        titleBox.getChildren().add(title);
-        titleBox.getChildren().add(finalPointsText);
-        buttons.getChildren().add(playButton);
-        buttons.getChildren().add(exitButton);
-        middle.getChildren().add(titleBox);
-        middle.getChildren().add(buttons);
-        middle.setAlignment(Pos.TOP_CENTER);
-        middle.setSpacing(30);
-        gameOverScreen.add(middle);
-        gameOverScreen.getScreen().setStyle("-fx-border-color: yellow; -fx-border-style: solid");
-        gameOverScreen.getScreen().setPrefWidth(scene.getWidth());
-        gameOverScreen.getScreen().setPrefHeight(scene.getHeight());
-        ((StackPane) gameOverScreen.getScreen()).setAlignment(Pos.CENTER);
+    private void backToMenuScreen() {
+        removeAllScreens();
+        addScreen(menuScreen);
     }
 
-//    private void createBackgroundMenuScreen() {
-//        Random rand = new Random();
-//        for (int i = 0; i < 3; i++) {
-//            Asteroid asteroid = new Asteroid("big", rand.nextInt((int) scene.getWidth()), rand.nextInt((int) scene.getHeight()));
-//            backgroundMenuScreen.add(asteroid.getImage());
-//            asteroid.move.start();
-//        }
-//        for (int i = 0; i < 2; i++) {
-//            Asteroid asteroid = new Asteroid("medium", rand.nextInt((int) scene.getWidth()), rand.nextInt((int) scene.getHeight()));
-//            backgroundMenuScreen.add(asteroid.getImage());
-//            asteroid.move.start();
-//        }
-//        for (int i = 0; i < 5; i++) {
-//            Asteroid asteroid = new Asteroid("small", rand.nextInt((int) scene.getWidth()), rand.nextInt((int) scene.getHeight()));
-//            backgroundMenuScreen.add(asteroid.getImage());
-//            asteroid.move.start();
-//        }
-//    }
-
-//    private void createMenuScreen() {
-//        VBox middle = new VBox();
-//        VBox titleBox = new VBox();
-//        titleBox.setAlignment(Pos.TOP_CENTER);
-//        titleBox.setPadding(new Insets(100, 0, 0, 0));
-//        VBox buttons = new VBox();
-//        buttons.setSpacing(20);
-//        buttons.setAlignment(Pos.CENTER);
-//        Text title = new Text("Asteroids");
-//        title.setFont(new Font("Helvetica Neue", 70));
-//        Button playButton = new Button("Play");
-//        playButton.setFocusTraversable(false);
-//        playButton.setFont(new Font("Helvetica Neue", 30));
-//        playButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-style: solid; -fx-border-radius: 4px");
-//        playButton.setOnAction(actionEvent -> startGame());
-//        Button exitButton = new Button("Exit");
-//        exitButton.setFocusTraversable(false);
-//        exitButton.setFont(new Font("Helvetica Neue", 30));
-//        exitButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-style: solid; -fx-border-radius: 4px");
-//        exitButton.setOnAction(actionEvent -> exitGame());
-//        titleBox.getChildren().add(title);
-//        buttons.getChildren().add(playButton);
-//        buttons.getChildren().add(exitButton);
-//        middle.getChildren().add(titleBox);
-//        middle.getChildren().add(buttons);
-//        middle.setAlignment(Pos.TOP_CENTER);
-//        middle.setSpacing(30);
-//        menuScreen.add(middle);
-//        menuScreen.getScreen().setStyle("-fx-border-color: yellow; -fx-border-style: solid");
-//        menuScreen.getScreen().setPrefWidth(scene.getWidth());
-//        menuScreen.getScreen().setPrefHeight(scene.getHeight());
-//        ((StackPane) menuScreen.getScreen()).setAlignment(Pos.CENTER);
-//    }
-
-    private void addScreen(AsteroidsScreen screen) {
-        group.getChildren().add(screen.getScreen());
+    private void removeAllScreens() {
+        group.getChildren().clear();
     }
 
-    private void removeScreen(AsteroidsScreen screen) {
-        group.getChildren().remove(screen.getScreen());
+    public void setBackgroundMenuScreen(Pane backgroundMenuScreen) {
+        Random rand = new Random();
+        for (int i = 0; i < 3; i++) {
+            Asteroid asteroid = new Asteroid("big", rand.nextInt((int) scene.getWidth()), rand.nextInt((int) scene.getHeight()));
+            backgroundMenuScreen.getChildren().add(asteroid.getImage());
+            asteroid.move.start();
+        }
+        for (int i = 0; i < 2; i++) {
+            Asteroid asteroid = new Asteroid("medium", rand.nextInt((int) scene.getWidth()), rand.nextInt((int) scene.getHeight()));
+            backgroundMenuScreen.getChildren().add(asteroid.getImage());
+            asteroid.move.start();
+        }
+        for (int i = 0; i < 5; i++) {
+            Asteroid asteroid = new Asteroid("small", rand.nextInt((int) scene.getWidth()), rand.nextInt((int) scene.getHeight()));
+            backgroundMenuScreen.getChildren().add(asteroid.getImage());
+            asteroid.move.start();
+        }
     }
 
     private void startMovingAsteroids()  {
@@ -167,69 +139,126 @@ public class Main extends Application {
         }
     }
 
+    private void addScreen(Node e) {
+        group.getChildren().add(e);
+    }
+
+    private void addLifeIcon() {
+        gameController.getLifeIconsContainer().getChildren().add(getLifeIcon());
+    }
+
+    private void setPointsText() {
+        gameController.getPointsText().setText(String.valueOf(points));
+    }
+
+    private void setAsteroids() {
+        Random rand = new Random();
+        for (int i = 0; i < numberOfAsteroids; i++) {
+            asteroids.add(new Asteroid("big", rand.nextInt((int) scene.getWidth()), rand.nextInt((int) scene.getHeight())));
+            gameController.getBackgroundScreen().getChildren().add(asteroids.get(i).getImage());
+        }
+    }
+
+    private void setBullets() {
+        for (Bullet bullet: ship.getLauncher().getBullets()) {
+            gameController.getBackgroundScreen().getChildren().add(bullet.getImage());
+        }
+    }
+
     private void startGame() {
         group.getChildren().clear();
-//        removeScreen(backgroundMenuScreen);
-//        removeScreen(menuScreen);
         addScreen(gameScreen);
         resetGame();
-        gameScreen.add(ship.getImage());
-        for (int i = 0; i < lives; i++) { addLifeIcon(gameScreen); }
-        setAsteroids(gameScreen);
-        setPointsText(gameScreen);
-        setBullets(gameScreen);
+        gameController.getBackgroundScreen().getChildren().add(ship.getImage());
+        for (int i = 0; i < lives; i++) { addLifeIcon(); }
+        setAsteroids();
+        setPointsText();
+        setBullets();
         startMovingAsteroids();
         collisionDetection.start();
         updateRound.start();
         ship.reset();
     }
 
-    private void setPointsText(AsteroidsScreen screen) {
-        pointsText.setLayoutX(50);
-        pointsText.setLayoutY(50);
-        pointsText.setFont(new Font(20));
-        screen.getScreen().getChildren().add(pointsText);
-        updatePointsText();
-    }
-
     private void removeLifeIcon() {
-        Polygon lifeIconToRemove = lifeIcons.get(lifeIcons.size() - 1);
-        lifeIcons.remove(lifeIconToRemove);
-        gameScreen.remove(lifeIconToRemove);
-    }
-
-    private void addLifeIcon(AsteroidsScreen screen) {
-        double x = 200;
-        double y = 50;
-        if (lifeIcons.size() > 0) {
-            Polygon lastLifeIcon = lifeIcons.get(lifeIcons.size() - 1);
-            x = lastLifeIcon.getLayoutX() + 30;
-            y = lastLifeIcon.getLayoutY();
-        }
-        Polygon newLifeIcon = getLifeIcon(x, y);
-        lifeIcons.add(newLifeIcon);
-        screen.getScreen().getChildren().add(newLifeIcon);
+        gameController.getLifeIconsContainer().getChildren().remove(gameController.getLifeIconsContainer().getChildren().size() - 1);
     }
 
     private void resetGame() {
         points = 0;
-        lifeIcons.clear();
         lives = 3;
         livesPoints = 0;
         asteroids.clear();
         numberOfAsteroids = 5;
-    }
-
-    private void backToMenuScreen() {
-        removeScreen(gameOverScreen);
-//        addScreen(backgroundMenuScreen);
-//        addScreen(menuScreen);
+        numberOfAsteroidsDestroyed = 0;
+        level = 1;
+        totalCollisions = 0;
     }
 
     private void stopAsteroidsMove() {
-        System.out.println("Stopping asteroids!");
-        for (Asteroid asteroid : asteroids) {
-            asteroid.move.stop();
+        for (Asteroid asteroid : asteroids) { asteroid.move.stop(); }
+    }
+
+    private void saveGameData() {
+        try {
+            HashMap<String, String> data = null;
+            FileInputStream fin = new FileInputStream("./src/asteroids/data/data.ser");
+            ObjectInputStream objectIn = new ObjectInputStream(fin);
+            data = (HashMap<String, String>) objectIn.readObject();
+            HashMap<String, String> newData = new HashMap<>();
+            int currentHighScore = Integer.parseInt(data.get("High Score"));
+            if (currentHighScore < points) {
+                newData.put("High Score", String.valueOf(points));
+            } else {
+                newData.put("High Score", data.get("High Score"));
+            }
+            int currentHighestLevel = Integer.parseInt(data.get("Highest Level"));
+            if (currentHighestLevel < level) {
+                newData.put("Highest Level", String.valueOf(level));
+            } else {
+                newData.put("Highest Level", data.get("Highest Level"));
+            }
+            newData.put("Total Collisions", String.valueOf(Integer.parseInt(data.get("Total Collisions")) + totalCollisions));
+            newData.put("Total Asteroids Destroyed", String.valueOf(Integer.parseInt(data.get("Total Asteroids Destroyed")) + numberOfAsteroidsDestroyed));
+            newData.put("Total Points", String.valueOf(Integer.parseInt(data.get("Total Points")) + points));
+            newData.put("Total Games Played", String.valueOf(Integer.parseInt(data.get("Total Games Played")) + 1));
+            FileOutputStream fout = new FileOutputStream("./src/asteroids/data/data.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+            oos.writeObject(newData);
+            oos.close();
+            fout.close();
+            objectIn.close();
+            fin.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private HashMap<String, String> getDataFromFile() throws IOException, ClassNotFoundException {
+        HashMap<String, String> data = null;
+        FileInputStream fin = new FileInputStream("./src/asteroids/data/data.ser");
+        ObjectInputStream objectIn = new ObjectInputStream(fin);
+        data = (HashMap<String, String>) objectIn.readObject();
+        objectIn.close();
+        fin.close();
+        return data;
+    }
+
+    private void initializeGameData() throws IOException {
+        File file = new File("./src/asteroids/data/data.ser");
+        if (file.createNewFile()) {
+            HashMap<String, String> data = new HashMap<>();
+            data.put("High Score", String.valueOf(0));
+            data.put("Highest Level", String.valueOf(0));
+            data.put("Total Collisions", String.valueOf(0));
+            data.put("Total Asteroids Destroyed", String.valueOf(0));
+            data.put("Total Points", String.valueOf(0));
+            data.put("Total Games Played", String.valueOf(0));
+            FileOutputStream fout = new FileOutputStream("./src/asteroids/data/data.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fout);
+            oos.writeObject(data);
+            oos.close();
+            fout.close();
         }
     }
 
@@ -237,9 +266,10 @@ public class Main extends Application {
         collisionDetection.stop();
         updateRound.stop();
         stopAsteroidsMove();
-        gameScreen.getScreen().getChildren().clear();
-        removeScreen(gameScreen);
-        createGameOverScreen();
+        saveGameData();
+        group.getChildren().clear();
+        gameController.getBackgroundScreen().getChildren().removeIf(o -> o instanceof Polygon || o instanceof Circle);
+        gameOverController.getPointsText().setText(String.valueOf(points));
         addScreen(gameOverScreen);
     }
 
@@ -249,14 +279,14 @@ public class Main extends Application {
             removeLifeIcon();
         } else {
             lives++;
-            addLifeIcon(gameScreen);
+            addLifeIcon();
         }
         if (lives == 0) {
             endGame();
         }
     }
 
-    private Polygon getLifeIcon(double x, double y) {
+    private Polygon getLifeIcon() {
         Polygon lifeIcon = new Polygon();
         ObservableList<Double> shipPoints = ship.getImage().getPoints();
         Double[] points = new Double[shipPoints.size()];
@@ -266,36 +296,17 @@ public class Main extends Application {
         lifeIcon.getPoints().addAll(points);
         lifeIcon.setRotate(-90);
         lifeIcon.setFill(Color.TRANSPARENT);
-        lifeIcon.setStroke(Color.BLACK);
+        lifeIcon.setStroke(Color.LAWNGREEN);
         lifeIcon.setScaleX(0.7);
         lifeIcon.setScaleY(0.7);
-        lifeIcon.setLayoutX(x);
-        lifeIcon.setLayoutY(y);
         return lifeIcon;
-    }
-
-    private void setBullets(AsteroidsScreen screen) {
-        for (Bullet bullet: ship.getLauncher().getBullets()) {
-            screen.getScreen().getChildren().add(bullet.getImage());
-        }
-    }
-
-    private void setAsteroids(AsteroidsScreen screen) {
-        Random rand = new Random();
-        for (int i = 0; i < numberOfAsteroids; i++) {
-            asteroids.add(new Asteroid("big", rand.nextInt((int) scene.getWidth()), rand.nextInt((int) scene.getHeight())));
-            screen.getScreen().getChildren().add(asteroids.get(i).getImage());
-        }
-    }
-
-    private void updatePointsText() {
-        pointsText.setText(String.valueOf(points));
     }
 
     private void detectShipCollision() {
         for (Asteroid asteroid: asteroids) {
             Collision collision = new Collision(ship, asteroid);
             if (!ship.isResetting && collision.isCollision()) {
+                totalCollisions++;
                 updateLives("remove");
                 ship.reset();
             }
@@ -307,15 +318,16 @@ public class Main extends Application {
             for (Asteroid asteroid: asteroids) {
                 Collision collision = new Collision(bullet, asteroid);
                 if (bullet.isRunning() && collision.isCollision()) {
+                    numberOfAsteroidsDestroyed++;
                     updatePoints(asteroid.getSize());
                     ArrayList<Asteroid> resultingAsteroids = asteroid.crumble(asteroid.getImage().getLayoutX(), asteroid.getImage().getLayoutY());
                     asteroids.remove(asteroid);
-                    gameScreen.remove(asteroid.getImage());
+                    gameController.getBackgroundScreen().getChildren().remove(asteroid.getImage());
                     if (resultingAsteroids.size() != 0) {
                         asteroids.addAll(resultingAsteroids);
                         for (Asteroid asteroidInLoop: resultingAsteroids) {
-                            gameScreen.add(asteroidInLoop.getImage());
                             asteroidInLoop.move.start();
+                            gameController.getBackgroundScreen().getChildren().add(asteroidInLoop.getImage());
                         }
                     }
                     bullet.reset();
@@ -328,13 +340,13 @@ public class Main extends Application {
     private void updatePoints(String asteroidSize) {
         int pointsToAdd = 0;
         switch (asteroidSize) {
-            case "big" -> pointsToAdd = 100;
-            case "medium" -> pointsToAdd = 500;
-            case "small" -> pointsToAdd = 1000;
+            case "big" -> pointsToAdd = 25;
+            case "medium" -> pointsToAdd = 50;
+            case "small" -> pointsToAdd = 100;
         }
         livesPoints += pointsToAdd;
         points += pointsToAdd;
-        pointsText.setText(String.valueOf(points));
+        setPointsText();
         if (livesPoints >= 10000) {
             livesPoints -= 10000;
             updateLives("add");
@@ -353,12 +365,13 @@ public class Main extends Application {
         @Override
         public void handle(long l) {
             if (asteroids.size() == 0) {
+                level++;
                 Random rand = new Random();
                 numberOfAsteroids += 3;
                 ship.reset();
                 for (int i = 0; i < numberOfAsteroids; i++) {
                     asteroids.add(new Asteroid("big", rand.nextInt((int) scene.getWidth()), rand.nextInt((int) scene.getHeight())));
-                    gameScreen.add(asteroids.get(i).getImage());
+                    gameController.getBackgroundScreen().getChildren().add(asteroids.get(i).getImage());
                     asteroids.get(i).move.start();
                 }
             }

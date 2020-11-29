@@ -54,7 +54,7 @@ class Asteroid extends AsteroidsObject {
         polygonPoints = new Point[points.length/2];
         setPolygonPoints();
         polygon.setFill(Color.TRANSPARENT);
-        polygon.setStroke(Color.BLACK);
+        polygon.setStroke(Color.WHITE);
         positionPoints = new Point[polygonPoints.length];
         setPositionPoints(0);
     }
