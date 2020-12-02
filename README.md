@@ -1,5 +1,5 @@
 # Asteroids
-Modern remake of the ATARI Asteroids arcade game.
+Remake of the ATARI Asteroids arcade game implemented in Java using JavaFX for the GUI library.
 
 ![alt text](https://i.imgur.com/xzGe4G2.png)
 
