@@ -11,3 +11,6 @@ The objective of the game is to earn as many points possible by destroying all t
 
 # Instructions to Play
 Use the *space bar* to shoot bullets and the *up, right, and left* keys to move forward, right, and left respectively.
+
+# Collision Detection
+The collision detection in this version of the game is not AABB (Axis Aligned Bounding Box) like the original. It is a more acccurate collision detection called Separating Axis Theorem (SAT) collision detection.
