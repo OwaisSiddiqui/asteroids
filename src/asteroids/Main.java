@@ -245,6 +245,7 @@ public class Main extends Application {
     }
 
     private void initializeGameData() {
+        Boolean dir = new File("src/asteroids/data").mkdirs();
         File file = new File("src/asteroids/data/data.ser");
         try {
             if (file.createNewFile()) {
