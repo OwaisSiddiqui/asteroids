@@ -4,8 +4,18 @@ Remake of the ATARI Asteroids arcade game implemented in Java using JavaFX for t
 ![alt text](https://i.imgur.com/xzGe4G2.png)
 
 # Installation
-First `git clone https://github.com/OwaisSiddiqui/Asteroids`. Then run the `Main.java` in the `src` folder.
+Requirements:
+You need the following installed:
+- OpenJDK 15
+- JavaFX 15
 
+First `git clone https://github.com/OwaisSiddiqui/Asteroids`. Then run the following commands (with replacing the path name to paths on your machine where necessary):
+```
+cd Asteroids
+export PATH_TO_FX=path/to/javafx-sdk-15.0.1/lib
+javac --module-path $PATH_TO_FX --add-modules javafx.controls,javafx.fxml -cp src/asteroids:. ./src/asteroids/Main.java
+java --module-path $PATH_TO_FX --add-modules javafx.controls,javafx.fxml ./src/asteroids/Main.java
+```
 # Objective
 The objective of the game is to earn as many points possible by destroying all the asteroids in each level. Higher levels have more asteroids.
 
