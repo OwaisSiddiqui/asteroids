@@ -244,21 +244,25 @@ public class Main extends Application {
         return data;
     }
 
-    private void initializeGameData() throws IOException {
-        File file = new File("./src/asteroids/data/data.ser");
-        if (file.createNewFile()) {
-            HashMap<String, String> data = new HashMap<>();
-            data.put("High Score", String.valueOf(0));
-            data.put("Highest Level", String.valueOf(0));
-            data.put("Total Collisions", String.valueOf(0));
-            data.put("Total Asteroids Destroyed", String.valueOf(0));
-            data.put("Total Points", String.valueOf(0));
-            data.put("Total Games Played", String.valueOf(0));
-            FileOutputStream fout = new FileOutputStream("./src/asteroids/data/data.ser");
-            ObjectOutputStream oos = new ObjectOutputStream(fout);
-            oos.writeObject(data);
-            oos.close();
-            fout.close();
+    private void initializeGameData() {
+        File file = new File("src/asteroids/data/data.ser");
+        try {
+            if (file.createNewFile()) {
+                HashMap<String, String> data = new HashMap<>();
+                data.put("High Score", String.valueOf(0));
+                data.put("Highest Level", String.valueOf(0));
+                data.put("Total Collisions", String.valueOf(0));
+                data.put("Total Asteroids Destroyed", String.valueOf(0));
+                data.put("Total Points", String.valueOf(0));
+                data.put("Total Games Played", String.valueOf(0));
+                FileOutputStream fout = new FileOutputStream("src/asteroids/data/data.ser");
+                ObjectOutputStream oos = new ObjectOutputStream(fout);
+                oos.writeObject(data);
+                oos.close();
+                fout.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
